@@ -1,0 +1,4 @@
+sklearn
+click
+rich
+python-dotenv

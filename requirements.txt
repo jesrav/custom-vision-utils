@@ -1,0 +1,12 @@
+Pillow
+azure-cognitiveservices-vision-customvision
+msrest
+azure-storage-blob
+azure-storage-file-datalake
+pandas
+opencv-python
+imutils
+imgaug
+tensorflow
+pydantic
+pyyaml
