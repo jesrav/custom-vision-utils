@@ -1,18 +1,13 @@
 from pathlib import Path
 from typing import Union, List, Optional
 
-import requests
 from PIL import Image
 from pydantic import validator
 
 from custom_vision_utils.object_detection import Region
 from custom_vision_utils.image.image_interface import ImageInterface
 from custom_vision_utils.object_detection import BoundingBox
-
-
-def _download_image(url, outpath: Path):
-    r = requests.get(url, allow_redirects=True)
-    open(outpath, "wb").write(r.content)
+from custom_vision_utils.sdk_helpers import download_custom_vision_image
 
 
 class LocalImage(ImageInterface):
@@ -46,8 +41,8 @@ class LocalImage(ImageInterface):
             folder: Path
     ) -> "LocalImage":
         local_image_path = folder / Path(custom_vision_image.id + ".jpg")
-        _download_image(
-            url=custom_vision_image.original_image_uri,
+        download_custom_vision_image(
+            custom_vision_image=custom_vision_image,
             outpath=local_image_path
         )
         return LocalImage(uri=local_image_path, name=None)
@@ -82,7 +77,7 @@ class LocalClassifierImage(ImageInterface):
             folder: Path
     ) -> "LocalClassifierImage":
         local_image_path = folder / Path(custom_vision_image.id + ".jpg")
-        _download_image(
+        download_custom_vision_image(
             url=custom_vision_image.original_image_uri,
             outpath=local_image_path
         )
@@ -122,7 +117,7 @@ class LocalObjectDetectionImage(ImageInterface):
             folder: Path
     ) -> "LocalObjectDetectionImage":
         local_image_path = folder / Path(custom_vision_image.id + ".jpg")
-        _download_image(
+        download_custom_vision_image(
             url=custom_vision_image.original_image_uri,
             outpath=local_image_path
         )
@@ -139,3 +134,4 @@ class LocalObjectDetectionImage(ImageInterface):
                     tag_name=region.tag_name
                 ) for region in custom_vision_image.regions]
         )
+
