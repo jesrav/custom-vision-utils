@@ -2,7 +2,6 @@ import os
 import tempfile
 import zipfile
 import time
-from pathlib import Path
 from typing import List, Union, Dict
 
 import requests
@@ -10,7 +9,6 @@ from PIL import Image
 from azure.cognitiveservices.vision.customvision.prediction.models import (
     ImagePrediction,
 )
-from azure.cognitiveservices.vision.customvision.training.models import ImageFileCreateBatch
 from azure.cognitiveservices.vision.customvision.training.models._models_py3 import (
     CustomVisionErrorException,
 )
@@ -21,7 +19,6 @@ from azure.cognitiveservices.vision.customvision.prediction import (
     CustomVisionPredictionClient,
 )
 from msrest.authentication import ApiKeyCredentials
-from rich.progress import track
 
 from custom_vision_utils.pillow_utils import pil_image_to_byte_array, crop_image
 from custom_vision_utils.classification.result import ImageClassifierResultResult
@@ -245,16 +242,6 @@ def azure_image_prediction_to_image_classifier_results(
         for prediction in azure_imager_prediction.as_dict()["predictions"]
     ]
     return image_classifier_results
-
-
-def upload_image_batches(trainer, project_id, image_batches):
-    for batch in track(
-        list(image_batches),
-        description=f"Uploading pillow_utils batches to project with id {project_id}",
-    ):
-        _ = trainer.create_images_from_files(
-            project_id, ImageFileCreateBatch(images=batch)
-        )
 
 
 def api_classification(

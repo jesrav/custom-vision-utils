@@ -40,13 +40,19 @@ class LocalImage(ImageInterface):
             custom_vision_image,
             folder: Path
     ) -> "LocalImage":
-        local_image_path = folder / Path(custom_vision_image.id + ".jpg")
+        if custom_vision_image.metadata and 'name' in custom_vision_image.metadata:
+            name = custom_vision_image.metadata['name']
+            local_image_path = folder / Path(name + ".jpg")
+        else:
+            name = None
+            local_image_path = folder / Path(custom_vision_image.id + ".jpg")
+
         with open(local_image_path, "wb") as f:
             download_custom_vision_image(
                 custom_vision_image=custom_vision_image,
                 file_handler=f
             )
-        return LocalImage(uri=local_image_path, name=None)
+        return LocalImage(uri=local_image_path, name=name)
 
 
 class LocalClassifierImage(ImageInterface):
@@ -77,7 +83,13 @@ class LocalClassifierImage(ImageInterface):
             custom_vision_image,
             folder: Path
     ) -> "LocalClassifierImage":
-        local_image_path = folder / Path(custom_vision_image.id + ".jpg")
+        if custom_vision_image.metadata and 'name' in custom_vision_image.metadata:
+            name = custom_vision_image.metadata['name']
+            local_image_path = folder / Path(name + ".jpg")
+        else:
+            name = None
+            local_image_path = folder / Path(custom_vision_image.id + ".jpg")
+
         with open(local_image_path, "wb") as f:
             download_custom_vision_image(
                 custom_vision_image=custom_vision_image,
@@ -86,7 +98,7 @@ class LocalClassifierImage(ImageInterface):
         return LocalClassifierImage(
             uri=local_image_path,
             tag_names=[tag.tag_name for tag in custom_vision_image.tags],
-            name=None
+            name=name
         )
 
 
@@ -118,7 +130,13 @@ class LocalObjectDetectionImage(ImageInterface):
             custom_vision_image,
             folder: Path
     ) -> "LocalObjectDetectionImage":
-        local_image_path = folder / Path(custom_vision_image.id + ".jpg")
+        if custom_vision_image.metadata and 'name' in custom_vision_image.metadata:
+            name = custom_vision_image.metadata['name']
+            local_image_path = folder / Path(name + ".jpg")
+        else:
+            name = None
+            local_image_path = folder / Path(custom_vision_image.id + ".jpg")
+
         with open(local_image_path, "wb") as f:
             download_custom_vision_image(
                 custom_vision_image=custom_vision_image,
@@ -135,6 +153,7 @@ class LocalObjectDetectionImage(ImageInterface):
                         height=region.height,
                     ),
                     tag_name=region.tag_name
-                ) for region in custom_vision_image.regions]
+                ) for region in custom_vision_image.regions],
+            name=name
         )
 
