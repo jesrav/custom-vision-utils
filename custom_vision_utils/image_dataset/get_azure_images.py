@@ -1,17 +1,8 @@
 import math
-import tempfile
-from typing import Union, List, Iterable
+from typing import List, Iterable
 
 from azure.cognitiveservices.vision.customvision.training.models import ImageFileCreateEntry
 
-from custom_vision_utils.image_dataset import (
-    LocalImageDataSet,
-    LocalClassifierDataSet,
-    LocalObjectDetectionDataSet,
-    BlobImageDataSet,
-    BlobClassifierDataSet,
-    BlobObjectDetectionDataSet,
-)
 from custom_vision_utils.image import (
     LocalImage,
     LocalClassifierImage,
@@ -23,40 +14,19 @@ from custom_vision_utils.image import (
 from custom_vision_utils.image_dataset.image_dataset_interface import ImageDataSetInterface
 from custom_vision_utils.pillow_utils import pil_image_to_byte_array
 
-ImageDataSet = [
-    LocalImageDataSet,
-    LocalClassifierDataSet,
-    LocalObjectDetectionDataSet,
-    BlobImageDataSet,
-    BlobClassifierDataSet,
-    BlobObjectDetectionDataSet,
-]
-
-
-def _create_azure_image_file_entry_from_local_image(
-    image: Union[LocalImage, LocalClassifierImage, LocalObjectDetectionImage]
-) -> ImageFileCreateEntry:
-    with open(image.uri, "rb") as image_contents:
-        return ImageFileCreateEntry(
-            name=image.uri.stem,
-            contents=image_contents.read()
-        )
-
-
-def _create_azure_image_file_entry_from_blob_image(
-    image: Union[BlobImage, BlobClassifierImage, BlobObjectDetectionImage]
-) -> ImageFileCreateEntry:
-    return ImageFileCreateEntry(
-        name=image.name,
-        contents=pil_image_to_byte_array(image.get_pil_image())
-    )
-
 
 def _create_image_file_entry(image):
     if type(image) in [LocalImage, LocalClassifierImage, LocalObjectDetectionImage]:
-        return _create_azure_image_file_entry_from_local_image(image=image)
+        with open(image.uri, "rb") as image_contents:
+            return ImageFileCreateEntry(
+                name=image.uri.stem,
+                contents=image_contents.read()
+            )
     elif type(image) in [BlobImage, BlobClassifierImage, BlobObjectDetectionImage]:
-        return _create_azure_image_file_entry_from_blob_image(image=image)
+        return ImageFileCreateEntry(
+            name=image.name,
+            contents=pil_image_to_byte_array(image.get_pil_image())
+        )
     else:
         raise TypeError(
             "image must be an image object in one of the types:"
@@ -86,7 +56,7 @@ def _get_azure_images(
 
 
 def get_azure_image_batches(
-        image_data_set: ImageDataSet,
+        image_data_set: ImageDataSetInterface,
         batch_size: int = 64,
 ) -> Iterable[List[ImageFileCreateEntry]]:
     """
