@@ -8,3 +8,4 @@ from .blob import (
     BlobClassifierDataSet,
     BlobObjectDetectionDataSet,
 )
+from .get_azure_images import get_azure_image_batches

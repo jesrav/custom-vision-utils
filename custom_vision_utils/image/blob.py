@@ -8,6 +8,8 @@ from custom_vision_utils.image.image_interface import ImageInterface
 from custom_vision_utils.azure_blob import get_blob
 from custom_vision_utils.object_detection import Region
 from custom_vision_utils.pillow_utils import pil_image_to_byte_array
+from custom_vision_utils.sdk_helpers import download_custom_vision_image
+from custom_vision_utils.object_detection import BoundingBox
 
 
 class BlobImage(ImageInterface):
@@ -49,6 +51,30 @@ class BlobImage(ImageInterface):
             container_name=container_name,
             connection_str=connection_str,
             name=name
+        )
+
+    @staticmethod
+    def from_azure_custom_vision_image(
+            custom_vision_image,
+            folder: str,
+            container_name: str,
+            connection_str: Optional[str] = None,
+            overwrite: bool = True,
+    ) -> "BlobImage":
+
+        blob_uri = folder + f"/{custom_vision_image.id}" + ".jpg"
+        handler = BytesIO()
+        download_custom_vision_image(
+            custom_vision_image=custom_vision_image,
+            file_handler=handler
+        )
+        return BlobImage.from_pil_image(
+            image=Image.open(handler),
+            uri=blob_uri,
+            container_name=container_name,
+            name=None,
+            connection_str=connection_str,
+            overwrite=overwrite,
         )
 
 
@@ -97,6 +123,31 @@ class BlobClassifierImage(ImageInterface):
             connection_str=connection_str
         )
 
+    @staticmethod
+    def from_azure_custom_vision_image(
+            custom_vision_image,
+            folder: str,
+            container_name: str,
+            connection_str: Optional[str] = None,
+            overwrite: bool = True,
+    ) -> "BlobClassifierImage":
+
+        blob_uri = folder + f"/{custom_vision_image.id}" + ".jpg"
+        handler = BytesIO()
+        download_custom_vision_image(
+            custom_vision_image=custom_vision_image,
+            file_handler=handler
+        )
+        return BlobClassifierImage.from_pil_image(
+            image=Image.open(handler),
+            uri=blob_uri,
+            tag_names=[tag.tag_name for tag in custom_vision_image.tags],
+            container_name=container_name,
+            name=None,
+            connection_str=connection_str,
+            overwrite=overwrite,
+        )
+
 
 class BlobObjectDetectionImage(ImageInterface):
     def __init__(
@@ -141,4 +192,38 @@ class BlobObjectDetectionImage(ImageInterface):
             container_name=container_name,
             name=name,
             connection_str=connection_str
+        )
+
+    @staticmethod
+    def from_azure_custom_vision_image(
+            custom_vision_image,
+            folder: str,
+            container_name: str,
+            connection_str: Optional[str] = None,
+            overwrite: bool = True,
+    ) -> "BlobObjectDetectionImage":
+
+        blob_uri = folder + f"/{custom_vision_image.id}" + ".jpg"
+        handler = BytesIO()
+        download_custom_vision_image(
+            custom_vision_image=custom_vision_image,
+            file_handler=handler
+        )
+        return BlobObjectDetectionImage.from_pil_image(
+            image=Image.open(handler),
+            uri=blob_uri,
+            regions=[
+                Region(
+                    bounding_box=BoundingBox(
+                        left=region.left,
+                        top=region.top,
+                        width=region.width,
+                        height=region.height,
+                    ),
+                    tag_name=region.tag_name
+                ) for region in custom_vision_image.regions],
+            container_name=container_name,
+            name=None,
+            connection_str=connection_str,
+            overwrite=overwrite,
         )

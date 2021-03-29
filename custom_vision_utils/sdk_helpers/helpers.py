@@ -2,6 +2,7 @@ import os
 import tempfile
 import zipfile
 import time
+from pathlib import Path
 from typing import List, Union, Dict
 
 import requests
@@ -280,3 +281,13 @@ def get_tag_id(project_tag_dict: Dict, tag_name: str) -> str:
         raise KeyError(
             f"Tag `{tag_name}` not part of project tags. Allowed values are: {project_tag_dict.keys()}"
         )
+
+
+def download_custom_vision_image(custom_vision_image, file_handler) -> None:
+    """Download a custom vision image.
+
+    :param custom_vision_image: A custom vision image object
+    :param file_handler: File like object
+    """
+    r = requests.get(custom_vision_image.original_image_uri, allow_redirects=True)
+    file_handler.write(r.content)

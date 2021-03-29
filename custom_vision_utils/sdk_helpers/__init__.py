@@ -13,4 +13,5 @@ from .helpers import (
     get_predictions_sorted_by_probability,
     crop_image_based_on_object_detection,
     download_model_iteration_as_tensorflow,
+    download_custom_vision_image,
 )
