@@ -25,7 +25,7 @@ class ImageDataSetInterface(ABC):
         pass
 
     @abstractmethod
-    def from_config(self):
+    def from_config(self, yaml_config_path: Union[Path, str]):
         pass
 
     @abstractmethod
