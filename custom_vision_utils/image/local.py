@@ -3,10 +3,11 @@ from typing import Union, List, Optional
 
 import requests
 from PIL import Image
-from pydantic import validator, FilePath
+from pydantic import validator
 
 from custom_vision_utils.object_detection import Region
 from custom_vision_utils.image.image_interface import ImageInterface
+from custom_vision_utils.object_detection import BoundingBox
 
 
 def _download_image(url, outpath: Path):
@@ -115,15 +116,26 @@ class LocalObjectDetectionImage(ImageInterface):
         image.save(uri)
         return LocalObjectDetectionImage(uri=uri, regions=regions, name=name)
 
-    # TODO: map azure region to Region
-    # @staticmethod
-    # def from_azure_custom_vision_image(
-    #         custom_vision_image,
-    #         folder: Path
-    # ) -> "LocalClassifierImage":
-    #     local_image_path = folder / Path(custom_vision_image.id + ".jpg")
-    #     _download_image(
-    #         url=custom_vision_image.original_image_uri,
-    #         outpath=local_image_path
-    #     )
-    #     return LocalClassifierImage(uri=local_image_path, regions=[tag.tag_name for tag in custom_vision_image.tags])
+    @staticmethod
+    def from_azure_custom_vision_image(
+            custom_vision_image,
+            folder: Path
+    ) -> "LocalObjectDetectionImage":
+        local_image_path = folder / Path(custom_vision_image.id + ".jpg")
+        _download_image(
+            url=custom_vision_image.original_image_uri,
+            outpath=local_image_path
+        )
+        return LocalObjectDetectionImage(
+            uri=local_image_path,
+            regions=[
+                Region(
+                    bounding_box=BoundingBox(
+                        left=region.left,
+                        top=region.top,
+                        width=region.width,
+                        height=region.height,
+                    ),
+                    tag_name=region.tag_name
+                ) for region in custom_vision_image.regions]
+        )
