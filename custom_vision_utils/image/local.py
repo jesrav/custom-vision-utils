@@ -41,10 +41,11 @@ class LocalImage(ImageInterface):
             folder: Path
     ) -> "LocalImage":
         local_image_path = folder / Path(custom_vision_image.id + ".jpg")
-        download_custom_vision_image(
-            custom_vision_image=custom_vision_image,
-            outpath=local_image_path
-        )
+        with open(local_image_path, "wb") as f:
+            download_custom_vision_image(
+                custom_vision_image=custom_vision_image,
+                file_handler=f
+            )
         return LocalImage(uri=local_image_path, name=None)
 
 
@@ -77,10 +78,11 @@ class LocalClassifierImage(ImageInterface):
             folder: Path
     ) -> "LocalClassifierImage":
         local_image_path = folder / Path(custom_vision_image.id + ".jpg")
-        download_custom_vision_image(
-            url=custom_vision_image.original_image_uri,
-            outpath=local_image_path
-        )
+        with open(local_image_path, "wb") as f:
+            download_custom_vision_image(
+                custom_vision_image=custom_vision_image,
+                file_handler=f
+            )
         return LocalClassifierImage(
             uri=local_image_path,
             tag_names=[tag.tag_name for tag in custom_vision_image.tags],
@@ -117,10 +119,11 @@ class LocalObjectDetectionImage(ImageInterface):
             folder: Path
     ) -> "LocalObjectDetectionImage":
         local_image_path = folder / Path(custom_vision_image.id + ".jpg")
-        download_custom_vision_image(
-            url=custom_vision_image.original_image_uri,
-            outpath=local_image_path
-        )
+        with open(local_image_path, "wb") as f:
+            download_custom_vision_image(
+                custom_vision_image=custom_vision_image,
+                file_handler=f
+            )
         return LocalObjectDetectionImage(
             uri=local_image_path,
             regions=[
