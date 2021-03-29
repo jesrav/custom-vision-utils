@@ -7,7 +7,5 @@ class ImageInterface(ABC):
     def get_pil_image(self):
         pass
 
-    @abstractmethod
-    def from_pil_image(self):
-        pass
+
 
