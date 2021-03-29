@@ -242,7 +242,7 @@ class BlobClassifierDataSet(ImageDataSetInterface):
             images=[
                 BlobClassifierImageConfig(
                     uri=image.uri,
-                    tag_names=image.tag_name,
+                    tag_names=image.tag_names,
                     container_name=image.container_name
                 )
                 for image in self
@@ -347,6 +347,12 @@ class BlobObjectDetectionDataSet(ImageDataSetInterface):
                 )
             )
         return blob_object_detection_data
+
+    @classmethod
+    def from_config(cls, yaml_config_path: Union[Path, str]):
+        with open(yaml_config_path, "r") as stream:
+            config = yaml.safe_load(stream)
+        return cls._from_flat_config(config)
 
     def get_config(self) -> BlobObjectDetectionDataFlatConfig:
         return BlobObjectDetectionDataFlatConfig(
