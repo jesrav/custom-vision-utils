@@ -29,10 +29,7 @@ class BlobImageDataSet(ImageDataSetInterface):
     def append(self, blob_image: BlobImage) -> None:
         if not isinstance(blob_image, BlobImage):
             raise ValueError("classifier_image must be type BlobImage.")
-        if not self.images:
-            self.images = [blob_image]
-        else:
-            self.images = self.images + [blob_image]
+        self.images = [blob_image] if not self.images else self.images + [blob_image]
 
     def __add__(self, other):
         if not isinstance(other, BlobImageDataSet):
@@ -47,6 +44,9 @@ class BlobImageDataSet(ImageDataSetInterface):
     def __iter__(self):
         for i in range(len(self.images)):
             yield self.images[i]
+
+    def __getitem__(self, item):
+        return self.images[item]
 
     @classmethod
     def _from_dir_config(cls, config: dict, connection_str: Optional[str] = None):
@@ -106,59 +106,6 @@ class BlobImageDataSet(ImageDataSetInterface):
             ],
         )
 
-    def _get_azure_images(
-        self,
-        trainer,
-        project_id,
-        start_inx,
-        stop_inx,
-    ) -> List[ImageFileCreateEntry]:
-        """Get of images in Azure specific format.
-
-        :param trainer: CustomVisionTrainingClient
-        :param project_id: Custom Vision project id
-        :param start_index: Start index of images to generate from self.images
-        :param stop_inx: Start index of images to generate from self.images
-        :return:
-        """
-        if not start_inx:
-            start_inx = 0
-        if not stop_inx:
-            stop_inx = len(self.images)
-
-        project_tag_dict = get_tag_dict(trainer, project_id)
-        azure_images = []
-        for image in self.images[start_inx:stop_inx]:
-            azure_images.append(
-                ImageFileCreateEntry(
-                    name=image.uri,
-                    contents=pil_image_to_byte_array(image.get_pil_image()),
-                    tag_ids=[
-                        get_tag_id(project_tag_dict, tag)
-                        for tag in image.tag_names
-                    ],
-                )
-            )
-        return azure_images
-
-    def get_azure_image_batches(
-        self, trainer, project_id, batch_size=64
-    ) -> Iterable[List[ImageFileCreateEntry]]:
-        """
-        creates a generator that yields batches of images in Azure specific format of size batch_size. Custom Vision
-        can maximally upload batches of 64.
-        """
-        num_batches = math.ceil(len(self.images) / batch_size)
-        for i in range(num_batches):
-            start_idx = i * batch_size
-            stop_inx = start_idx + batch_size
-            yield self._get_azure_images(
-                trainer=trainer,
-                project_id=project_id,
-                start_inx=start_idx,
-                stop_inx=stop_inx,
-            )
-
 
 class BlobClassifierDataSet(ImageDataSetInterface):
     def __init__(self, images: Union[List[BlobClassifierImage], None] = None):
@@ -185,6 +132,9 @@ class BlobClassifierDataSet(ImageDataSetInterface):
     def __iter__(self):
         for i in range(len(self.images)):
             yield self.images[i]
+
+    def __getitem__(self, item):
+        return self.images[item]
 
     @classmethod
     def _from_dir_config(cls, config: dict, connection_str: Optional[str] = None):
@@ -249,59 +199,6 @@ class BlobClassifierDataSet(ImageDataSetInterface):
             ],
         )
 
-    def _get_azure_images(
-        self,
-        trainer,
-        project_id,
-        start_inx,
-        stop_inx,
-    ) -> List[ImageFileCreateEntry]:
-        """Get of images in Azure specific format.
-
-        :param trainer: CustomVisionTrainingClient
-        :param project_id: Custom Vision project id
-        :param start_index: Start index of images to generate from self.images
-        :param stop_inx: Start index of images to generate from self.images
-        :return:
-        """
-        if not start_inx:
-            start_inx = 0
-        if not stop_inx:
-            stop_inx = len(self.images)
-
-        project_tag_dict = get_tag_dict(trainer, project_id)
-        azure_images = []
-        for image in self.images[start_inx:stop_inx]:
-            azure_images.append(
-                ImageFileCreateEntry(
-                    name=image.uri,
-                    contents=pil_image_to_byte_array(image.get_pil_image()),
-                    tag_ids=[
-                        get_tag_id(project_tag_dict, tag)
-                        for tag in image.tag_names
-                    ],
-                )
-            )
-        return azure_images
-
-    def get_azure_image_batches(
-        self, trainer, project_id, batch_size=64
-    ) -> Iterable[List[ImageFileCreateEntry]]:
-        """
-        creates a generator that yields batches of images in Azure specific format of size batch_size. Custom Vision
-        can maximally upload batches of 64.
-        """
-        num_batches = math.ceil(len(self.images) / batch_size)
-        for i in range(num_batches):
-            start_idx = i * batch_size
-            stop_inx = start_idx + batch_size
-            yield self._get_azure_images(
-                trainer=trainer,
-                project_id=project_id,
-                start_inx=start_idx,
-                stop_inx=stop_inx,
-            )
-
 
 class BlobObjectDetectionDataSet(ImageDataSetInterface):
     def __init__(self, images: Optional[List[BlobObjectDetectionImage]] = None):
@@ -328,6 +225,9 @@ class BlobObjectDetectionDataSet(ImageDataSetInterface):
     def __iter__(self):
         for i in range(len(self.images)):
             yield self.images[i]
+
+    def __getitem__(self, item):
+        return self.images[item]
 
     @classmethod
     def _from_flat_config(cls, config: Dict, connection_str: Optional[str] = None):
@@ -365,59 +265,3 @@ class BlobObjectDetectionDataSet(ImageDataSetInterface):
                 for image in self
             ]
         )
-
-    def _get_azure_images(
-            self,
-            trainer,
-            project_id,
-            start_inx,
-            stop_inx,
-    ) -> List[ImageFileCreateEntry]:
-        """Get of images in Azure specific format.
-
-        :param trainer: CustomVisionTrainingClient
-        :param project_id: Custom Vision project id
-        :param start_index: Start index of images to generate from self.images
-        :param stop_inx: Start index of images to generate from self.images
-        :return:
-        """
-        if not start_inx:
-            start_inx = 0
-        if not stop_inx:
-            stop_inx = len(self.images)
-
-        project_tag_dict = get_tag_dict(trainer, project_id)
-        azure_images = []
-        for image in self.images[start_inx:stop_inx]:
-            with open(image.uri, "rb") as image_contents:
-                azure_images.append(
-                    ImageFileCreateEntry(
-                        name=image.uri.stem,
-                        contents=image_contents.read(),
-                        regions=[
-                            region.to_azure_region(
-                                tag_id=project_tag_dict[region.tag_name]
-                            )
-                            for region in image.regions
-                        ],
-                    )
-                )
-        return azure_images
-
-    def get_azure_image_batches(
-            self, trainer, project_id, batch_size=64
-    ) -> Iterable[List[ImageFileCreateEntry]]:
-        """
-        creates a generator that yields batches of images in Azure specific format of size batch_size. Custom Vision
-        can maximally upload batches of 64.
-        """
-        num_batches = math.ceil(len(self.images) / batch_size)
-        for i in range(num_batches):
-            start_idx = i * batch_size
-            stop_inx = start_idx + batch_size
-            yield self._get_azure_images(
-                trainer=trainer,
-                project_id=project_id,
-                start_inx=start_idx,
-                stop_inx=stop_inx,
-            )

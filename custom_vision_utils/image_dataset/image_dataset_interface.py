@@ -9,7 +9,7 @@ import yaml
 class ImageDataSetInterface(ABC):
 
     @abstractmethod
-    def append(self):
+    def append(self, other) -> None:
         pass
 
     @abstractmethod
@@ -25,6 +25,10 @@ class ImageDataSetInterface(ABC):
         pass
 
     @abstractmethod
+    def __getitem__(self, item):
+        pass
+
+    @abstractmethod
     def from_config(self, yaml_config_path: Union[Path, str]):
         pass
 
@@ -35,7 +39,3 @@ class ImageDataSetInterface(ABC):
     def write_config(self, outfile: Union[Path, str]):
         with open(outfile, "w") as f:
             yaml.dump(json.loads(self.get_config().json()), f)
-
-    @abstractmethod
-    def get_azure_image_batches(self):
-        pass

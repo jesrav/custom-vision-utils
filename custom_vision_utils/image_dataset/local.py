@@ -15,7 +15,6 @@ from custom_vision_utils.configurations.local_data import (
     LocalObjectDetectionDataFlatConfig, LocalObjectDetectionImageConfig,
 )
 from custom_vision_utils.image.local import LocalImage, LocalClassifierImage, LocalObjectDetectionImage
-from custom_vision_utils.sdk_helpers.helpers import get_tag_dict, get_tag_id
 from custom_vision_utils.image_dataset.image_dataset_interface import ImageDataSetInterface
 
 
@@ -26,10 +25,7 @@ class LocalImageDataSet(ImageDataSetInterface):
     def append(self, local_image: LocalImage) -> None:
         if not isinstance(local_image, LocalImage):
             raise ValueError("classifier_image must be type LocalImage.")
-        if not self.images:
-            self.images = [local_image]
-        else:
-            self.images = self.images + [local_image]
+        self.images = [local_image] if not self.images else self.images + [local_image]
 
     def __add__(self, other: "LocalImageDataSet"):
         if not isinstance(other, LocalImageDataSet):
@@ -44,6 +40,9 @@ class LocalImageDataSet(ImageDataSetInterface):
     def __iter__(self):
         for i in range(len(self.images)):
             yield self.images[i]
+
+    def __getitem__(self, item):
+        return self.images[item]
 
     @classmethod
     def _from_flat_config(cls, config: Dict):
@@ -80,51 +79,6 @@ class LocalImageDataSet(ImageDataSetInterface):
             ]
         )
 
-    def _get_azure_images(
-        self,
-        start_inx,
-        stop_inx,
-    ) -> List[ImageFileCreateEntry]:
-        """Get of images in Azure specific format.
-
-        :param trainer: CustomVisionTrainingClient
-        :param project_id: Custom Vision project id
-        :param start_index: Start index of images to generate from self.images
-        :param stop_inx: Start index of images to generate from self.images
-        :return:
-        """
-        if not start_inx:
-            start_inx = 0
-        if not stop_inx:
-            stop_inx = len(self.images)
-
-        azure_images = []
-        for image in self.images[start_inx:stop_inx]:
-            with open(image.uri, "rb") as image_contents:
-                azure_images.append(
-                    ImageFileCreateEntry(
-                        name=image.uri.stem,
-                        contents=image_contents.read()
-                    )
-                )
-        return azure_images
-
-    def get_azure_image_batches(
-        self, batch_size=64
-    ) -> Iterable[List[ImageFileCreateEntry]]:
-        """
-        creates a generator that yields batches of images in Azure specific format of size batch_size. Custom Vision
-        can maximally upload batches of 64.
-        """
-        num_batches = math.ceil(len(self.images) / batch_size)
-        for i in range(num_batches):
-            start_idx = i * batch_size
-            stop_inx = start_idx + batch_size
-            yield self._get_azure_images(
-                start_inx=start_idx,
-                stop_inx=stop_inx,
-            )
-
 
 class LocalClassifierDataSet(ImageDataSetInterface):
     def __init__(self, images: Optional[List[LocalClassifierImage]] = None):
@@ -151,6 +105,9 @@ class LocalClassifierDataSet(ImageDataSetInterface):
     def __iter__(self):
         for i in range(len(self.images)):
             yield self.images[i]
+
+    def __getitem__(self, item):
+        return self.images[item]
 
     @classmethod
     def _from_flat_config(cls, config: Dict):
@@ -199,60 +156,6 @@ class LocalClassifierDataSet(ImageDataSetInterface):
             ]
         )
 
-    def _get_azure_images(
-        self,
-        trainer,
-        project_id,
-        start_inx,
-        stop_inx,
-    ) -> List[ImageFileCreateEntry]:
-        """Get of images in Azure specific format.
-
-        :param trainer: CustomVisionTrainingClient
-        :param project_id: Custom Vision project id
-        :param start_index: Start index of images to generate from self.images
-        :param stop_inx: Start index of images to generate from self.images
-        :return:
-        """
-        if not start_inx:
-            start_inx = 0
-        if not stop_inx:
-            stop_inx = len(self.images)
-
-        project_tag_dict = get_tag_dict(trainer, project_id)
-        azure_images = []
-        for image in self.images[start_inx:stop_inx]:
-            with open(image.uri, "rb") as image_contents:
-                azure_images.append(
-                    ImageFileCreateEntry(
-                        name=image.uri.stem,
-                        contents=image_contents.read(),
-                        tag_ids=[
-                            get_tag_id(project_tag_dict, tag)
-                            for tag in image.tag_names
-                        ],
-                    )
-                )
-        return azure_images
-
-    def get_azure_image_batches(
-        self, trainer, project_id, batch_size=64
-    ) -> Iterable[List[ImageFileCreateEntry]]:
-        """
-        creates a generator that yields batches of images in Azure specific format of size batch_size. Custom Vision
-        can maximally upload batches of 64.
-        """
-        num_batches = math.ceil(len(self.images) / batch_size)
-        for i in range(num_batches):
-            start_idx = i * batch_size
-            stop_inx = start_idx + batch_size
-            yield self._get_azure_images(
-                trainer=trainer,
-                project_id=project_id,
-                start_inx=start_idx,
-                stop_inx=stop_inx,
-            )
-
 
 class LocalObjectDetectionDataSet(ImageDataSetInterface):
     def __init__(self, images: Optional[List[LocalObjectDetectionImage]] = None):
@@ -279,6 +182,9 @@ class LocalObjectDetectionDataSet(ImageDataSetInterface):
     def __iter__(self):
         for i in range(len(self.images)):
             yield self.images[i]
+
+    def __getitem__(self, item):
+        return self.images[item]
 
     @classmethod
     def _from_flat_config(cls, config: Dict):
@@ -308,59 +214,3 @@ class LocalObjectDetectionDataSet(ImageDataSetInterface):
                 for image in self
             ]
         )
-
-    def _get_azure_images(
-        self,
-        trainer,
-        project_id,
-        start_inx,
-        stop_inx,
-    ) -> List[ImageFileCreateEntry]:
-        """Get of images in Azure specific format.
-
-        :param trainer: CustomVisionTrainingClient
-        :param project_id: Custom Vision project id
-        :param start_index: Start index of images to generate from self.images
-        :param stop_inx: Start index of images to generate from self.images
-        :return:
-        """
-        if not start_inx:
-            start_inx = 0
-        if not stop_inx:
-            stop_inx = len(self.images)
-
-        project_tag_dict = get_tag_dict(trainer, project_id)
-        azure_images = []
-        for image in self.images[start_inx:stop_inx]:
-            with open(image.uri, "rb") as image_contents:
-                azure_images.append(
-                    ImageFileCreateEntry(
-                        name=image.uri.stem,
-                        contents=image_contents.read(),
-                        regions=[
-                            region.to_azure_region(
-                                tag_id=project_tag_dict[region.tag_name]
-                            )
-                            for region in image.regions
-                        ],
-                    )
-                )
-        return azure_images
-
-    def get_azure_image_batches(
-        self, trainer, project_id, batch_size=64
-    ) -> Iterable[List[ImageFileCreateEntry]]:
-        """
-        creates a generator that yields batches of images in Azure specific format of size batch_size. Custom Vision
-        can maximally upload batches of 64.
-        """
-        num_batches = math.ceil(len(self.images) / batch_size)
-        for i in range(num_batches):
-            start_idx = i * batch_size
-            stop_inx = start_idx + batch_size
-            yield self._get_azure_images(
-                trainer=trainer,
-                project_id=project_id,
-                start_inx=start_idx,
-                stop_inx=stop_inx,
-            )
