@@ -304,7 +304,7 @@ class LocalObjectDetectionDataSet(ImageDataSetInterface):
     def get_config(self) -> LocalObjectDetectionDataFlatConfig:
         return LocalObjectDetectionDataFlatConfig(
             images = [
-                LocalObjectDetectionImageConfig(uri=image.uri, tag_names=image.tag_names)
+                LocalObjectDetectionImageConfig(uri=image.uri, regions=image.regions)
                 for image in self
             ]
         )
