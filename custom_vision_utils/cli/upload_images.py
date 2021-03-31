@@ -12,7 +12,7 @@ from custom_vision_utils.image_dataset import (
     BlobClassifierDataSet,
     BlobObjectDetectionDataSet,
 )
-from logger import logger
+from custom_vision_utils.cli.logger import logger
 
 image_data_classes = [
     LocalClassifierDataSet,

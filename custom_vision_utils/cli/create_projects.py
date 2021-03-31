@@ -14,7 +14,7 @@ from custom_vision_utils.configurations.custom_vision_projects import (
     load_custom_vision_project_configs,
     Tag,
 )
-from logger import logger
+from custom_vision_utils.cli.logger import logger
 
 
 def create_project(
