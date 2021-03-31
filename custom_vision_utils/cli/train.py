@@ -4,10 +4,10 @@ import click
 from dotenv import load_dotenv, find_dotenv
 
 from custom_vision_utils.sdk_helpers import get_trainer, get_project_id
-from logger import logger
+from custom_vision_utils.cli.logger import logger
 
 
-def train(trainer, project_id):
+def train_project(trainer, project_id):
     iteration = trainer.train_project(project_id)
     while iteration.status != "Completed":
         iteration = trainer.get_iteration(project_id, iteration.id)
@@ -25,6 +25,8 @@ def train(project_name):
     trainer = get_trainer()
     project_id = get_project_id(trainer, project_name)
     logger.info(f"Training project: {project_name}")
-    breakpoint()
-    train(trainer, project_id)
+    train_project(trainer, project_id)
 
+
+if __name__ == '__main__':
+    train()
