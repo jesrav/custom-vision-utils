@@ -26,7 +26,3 @@ def train(project_name):
     project_id = get_project_id(trainer, project_name)
     logger.info(f"Training project: {project_name}")
     train_project(trainer, project_id)
-
-
-if __name__ == '__main__':
-    train()
