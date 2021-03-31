@@ -2,7 +2,7 @@ import os
 import tempfile
 import zipfile
 import time
-from typing import List, Union, Dict
+from typing import List, Union
 
 import requests
 from PIL import Image
