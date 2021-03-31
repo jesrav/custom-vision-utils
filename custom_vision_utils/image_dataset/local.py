@@ -1,10 +1,8 @@
-import math
 from pathlib import Path
 from typing import Optional, List, Dict, Union, Iterable
 
 import yaml
 
-from azure.cognitiveservices.vision.customvision.training.models import ImageFileCreateEntry
 from custom_vision_utils.configurations.local_data import (
     LocalImageDataFlatConfig,
     LocalImageDataDirConfig,

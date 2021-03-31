@@ -61,8 +61,13 @@ class BlobImage(ImageInterface):
             connection_str: Optional[str] = None,
             overwrite: bool = True,
     ) -> "BlobImage":
+        if custom_vision_image.metadata and 'name' in custom_vision_image.metadata:
+            name = custom_vision_image.metadata['name']
+            blob_uri = folder + f"/{name}" + ".jpg"
+        else:
+            name = None
+            blob_uri = folder + f"/{custom_vision_image.id}" + ".jpg"
 
-        blob_uri = folder + f"/{custom_vision_image.id}" + ".jpg"
         handler = BytesIO()
         download_custom_vision_image(
             custom_vision_image=custom_vision_image,
@@ -72,7 +77,7 @@ class BlobImage(ImageInterface):
             image=Image.open(handler),
             uri=blob_uri,
             container_name=container_name,
-            name=None,
+            name=name,
             connection_str=connection_str,
             overwrite=overwrite,
         )
@@ -131,8 +136,13 @@ class BlobClassifierImage(ImageInterface):
             connection_str: Optional[str] = None,
             overwrite: bool = True,
     ) -> "BlobClassifierImage":
+        if custom_vision_image.metadata and 'name' in custom_vision_image.metadata:
+            name = custom_vision_image.metadata['name']
+            blob_uri = folder + f"/{name}" + ".jpg"
+        else:
+            name = None
+            blob_uri = folder + f"/{custom_vision_image.id}" + ".jpg"
 
-        blob_uri = folder + f"/{custom_vision_image.id}" + ".jpg"
         handler = BytesIO()
         download_custom_vision_image(
             custom_vision_image=custom_vision_image,
@@ -143,7 +153,7 @@ class BlobClassifierImage(ImageInterface):
             uri=blob_uri,
             tag_names=[tag.tag_name for tag in custom_vision_image.tags],
             container_name=container_name,
-            name=None,
+            name=name,
             connection_str=connection_str,
             overwrite=overwrite,
         )
@@ -202,8 +212,13 @@ class BlobObjectDetectionImage(ImageInterface):
             connection_str: Optional[str] = None,
             overwrite: bool = True,
     ) -> "BlobObjectDetectionImage":
+        if custom_vision_image.metadata and 'name' in custom_vision_image.metadata:
+            name = custom_vision_image.metadata['name']
+            blob_uri = folder + f"/{name}" + ".jpg"
+        else:
+            name = None
+            blob_uri = folder + f"/{custom_vision_image.id}" + ".jpg"
 
-        blob_uri = folder + f"/{custom_vision_image.id}" + ".jpg"
         handler = BytesIO()
         download_custom_vision_image(
             custom_vision_image=custom_vision_image,
@@ -223,7 +238,7 @@ class BlobObjectDetectionImage(ImageInterface):
                     tag_name=region.tag_name
                 ) for region in custom_vision_image.regions],
             container_name=container_name,
-            name=None,
+            name=name,
             connection_str=connection_str,
             overwrite=overwrite,
         )
