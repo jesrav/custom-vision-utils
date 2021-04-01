@@ -55,11 +55,19 @@ def list_blobs(
     name_starts_with: Optional[str] = None,
     extensions: Optional[List[str]] = None,
     connection_string: Optional[str] = None,
-) -> Iterable[BlobProperties]:
+) -> List[BlobProperties]:
     blob_service_client = get_blob_service_client(connection_string=connection_string)
     container_client = blob_service_client.get_container_client(container_name)
     blob_properties = container_client.list_blobs(name_starts_with=name_starts_with)
+    blob_properties_filtered = []
     if extensions:
         for extension in extensions:
-            blob_properties = [blob for blob in blob_properties if blob.name.endswith(extension)]
-    return blob_properties
+            blob_properties_filtered += [
+                blob
+                for blob in blob_properties
+                if blob.name.endswith(extension)
+            ]
+
+    else:
+        return [blob for blob in blob_properties]
+    return blob_properties_filtered
