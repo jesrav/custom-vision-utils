@@ -2,30 +2,26 @@ from pathlib import Path
 from typing import Union, List, Optional
 
 from PIL import Image
-from pydantic import validator
 
 from custom_vision_utils.object_detection import Region
 from custom_vision_utils.image.image_interface import ImageInterface
 from custom_vision_utils.object_detection import BoundingBox
 from custom_vision_utils.sdk_helpers import download_custom_vision_image
 
+ALLOWED_EXTENSIONS = [".jpeg", ".jpg"]
+
 
 class LocalImage(ImageInterface):
 
     def __init__(self, uri: Union[str, Path], name: Optional[str] = None) -> None:
-        if type(uri) == str:
-            uri = Path(uri)
+        uri = Path(uri)
+        if uri.suffix not in ALLOWED_EXTENSIONS:
+            raise ValueError(f"filepath extension must be one of {ALLOWED_EXTENSIONS}")
         if not uri.exists():
             raise ValueError(f"Image file {uri} does not exist.")
+
         self.uri = uri
         self.name = self.uri.stem if not name else name
-
-    @staticmethod
-    @validator("uri")
-    def _validator_file_format(value):
-        if value.suffix != ".jpg":
-            raise ValueError("filepath must be .jpg")
-        return value
 
     def get_pil_image(self) -> Image:
         return Image.open(self.uri)
@@ -61,8 +57,9 @@ class LocalImage(ImageInterface):
 
 class LocalClassifierImage(ImageInterface):
     def __init__(self, uri: Union[str, Path], tag_names: List[str], name: Optional[str] = None) -> None:
-        if type(uri) == str:
-            uri = Path(uri)
+        uri = Path(uri)
+        if uri.suffix not in ALLOWED_EXTENSIONS:
+            raise ValueError(f"filepath extension must be one of {ALLOWED_EXTENSIONS}")
         if not uri.exists():
             raise ValueError(f"Image file {uri} does not exist.")
         self.uri = uri
@@ -112,8 +109,9 @@ class LocalClassifierImage(ImageInterface):
 
 class LocalObjectDetectionImage(ImageInterface):
     def __init__(self, uri: Union[str, Path], regions: List[Region], name: Optional[str] = None) -> None:
-        if type(uri) == str:
-            uri = Path(uri)
+        uri = Path(uri)
+        if uri.suffix not in ALLOWED_EXTENSIONS:
+            raise ValueError(f"filepath extension must be one of {ALLOWED_EXTENSIONS}")
         if not uri.exists():
             raise ValueError(f"Image file {uri} does not exist.")
         self.uri = uri

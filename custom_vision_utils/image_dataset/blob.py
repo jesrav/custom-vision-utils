@@ -1,9 +1,7 @@
-import math
 from pathlib import Path
-from typing import Union, List, Optional, Dict, Iterable
+from typing import Union, List, Optional, Dict
 
 import yaml
-from azure.cognitiveservices.vision.customvision.training.models import ImageFileCreateEntry
 
 from custom_vision_utils.azure_blob import list_blobs
 from custom_vision_utils.configurations.blob_data import (
@@ -32,7 +30,7 @@ class BlobImageDataSet(ImageDataSetInterface):
     def __add__(self, other):
         if not isinstance(other, BlobImageDataSet):
             raise ValueError(
-                "You can only add ther objects of type BlobImageData."
+                "You can only add other objects of type BlobImageData."
             )
         return BlobImageDataSet(images=self.images + other.images)
 
@@ -55,7 +53,7 @@ class BlobImageDataSet(ImageDataSetInterface):
             for blob in list_blobs(
                 container_name=container_name,
                 name_starts_with=image_dir.blob_dir,
-                ends_with=".jpg",
+                extensions=[".jpg", ".jpeg"],
                 connection_string=connection_str,
             ):
                 blob_image_data.append(
@@ -144,7 +142,7 @@ class BlobClassifierDataSet(ImageDataSetInterface):
             for blob in list_blobs(
                 container_name=container_name,
                 name_starts_with=image_dir.blob_dir,
-                ends_with=".jpg",
+                extensions=[".jpg", ".jpeg"],
                 connection_string=connection_str,
             ):
                 blob_classifier_data.append(
