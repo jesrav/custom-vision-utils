@@ -11,6 +11,13 @@ from custom_vision_utils.pillow_utils import pil_image_to_byte_array
 from custom_vision_utils.sdk_helpers import download_custom_vision_image
 from custom_vision_utils.object_detection import BoundingBox
 
+ALLOWED_EXTENSIONS = [".jpeg", ".jpg"]
+
+
+def _validate_extension(uri: str):
+    if not any(uri.endswith(ext) for ext in ALLOWED_EXTENSIONS):
+        raise ValueError(f"blob_name must be one of the file types {ALLOWED_EXTENSIONS}.")
+
 
 class BlobImage(ImageInterface):
     def __init__(
@@ -20,8 +27,7 @@ class BlobImage(ImageInterface):
             connection_str: Optional[str] = None,
             name: Optional[str] = None
     ):
-        if not uri.endswith(".jpg"):
-            raise ValueError("uri must be of file type jpg.")
+        _validate_extension(uri)
         self.uri = uri
         self.container_name = container_name
         self.name = Path(self.uri).stem if not name else name
@@ -42,8 +48,7 @@ class BlobImage(ImageInterface):
             connection_str: Optional[str] = None,
             overwrite: bool = True,
     ) -> "BlobImage":
-        if not uri.endswith(".jpg"):
-            raise ValueError("blob_name must be of file type jpg.")
+        _validate_extension(uri)
         blob = get_blob(container_name, uri, connection_str)
         blob.upload_blob(pil_image_to_byte_array(image), overwrite=overwrite)
         return BlobImage(
@@ -92,8 +97,7 @@ class BlobClassifierImage(ImageInterface):
             name: Optional[str] = None,
             connection_str: Optional[str] = None
     ):
-        if not uri.endswith(".jpg"):
-            raise ValueError("uri must be of file type jpg.")
+        _validate_extension(uri)
         self.uri = uri
         self.container_name = container_name
         self.tag_names = tag_names
@@ -116,8 +120,7 @@ class BlobClassifierImage(ImageInterface):
             connection_str: Optional[str] = None,
             overwrite: bool = True,
     ) -> "BlobClassifierImage":
-        if not uri.endswith(".jpg"):
-            raise ValueError("blob_name must be of file type jpg.")
+        _validate_extension(uri)
         blob = get_blob(container_name, uri, connection_str)
         blob.upload_blob(pil_image_to_byte_array(image), overwrite=overwrite)
         return BlobClassifierImage(
@@ -168,8 +171,7 @@ class BlobObjectDetectionImage(ImageInterface):
             name: Optional[str] = None,
             connection_str: Optional[str] = None
     ):
-        if not uri.endswith(".jpg"):
-            raise ValueError("uri must be of file type jpg.")
+        _validate_extension(uri)
         self.uri = uri
         self.container_name = container_name
         self.regions = regions
@@ -192,8 +194,7 @@ class BlobObjectDetectionImage(ImageInterface):
             connection_str: Optional[str] = None,
             overwrite: bool = True,
     ) -> "BlobObjectDetectionImage":
-        if not uri.endswith(".jpg"):
-            raise ValueError("blob_name must be of file type jpg.")
+        _validate_extension(uri)
         blob = get_blob(container_name, uri, connection_str)
         blob.upload_blob(pil_image_to_byte_array(image), overwrite=overwrite)
         return BlobObjectDetectionImage(

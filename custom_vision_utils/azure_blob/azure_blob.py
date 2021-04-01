@@ -1,5 +1,5 @@
 import os
-from typing import Optional, Iterable
+from typing import Optional, Iterable, List
 
 from azure.storage.blob import BlobClient, BlobServiceClient
 from azure.storage.blob._models import BlobProperties
@@ -53,13 +53,21 @@ def upload_to_blob(blob, local_path):
 def list_blobs(
     container_name: str,
     name_starts_with: Optional[str] = None,
-    ends_with: Optional[str] = None,
+    extensions: Optional[List[str]] = None,
     connection_string: Optional[str] = None,
-) -> Iterable[BlobProperties]:
+) -> List[BlobProperties]:
     blob_service_client = get_blob_service_client(connection_string=connection_string)
     container_client = blob_service_client.get_container_client(container_name)
     blob_properties = container_client.list_blobs(name_starts_with=name_starts_with)
-    if ends_with:
-        return [blob for blob in blob_properties if blob.name.endswith(".jpg")]
+    blob_properties_filtered = []
+    if extensions:
+        for extension in extensions:
+            blob_properties_filtered += [
+                blob
+                for blob in blob_properties
+                if blob.name.endswith(extension)
+            ]
+
     else:
-        return blob_properties
+        return [blob for blob in blob_properties]
+    return blob_properties_filtered

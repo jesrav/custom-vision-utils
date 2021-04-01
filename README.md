@@ -1,7 +1,8 @@
 # TODO:
-- cli for many of the tasks
-- export images class/objdetect
-- Image objects should have a name that is independent of the uri.
+- Example project
+- Docstrings
+- Readme
 
-# Questions
-Connection string should live on BlobImageData?
+# IDEAS
+- Easy way to convert between blob and local data sets.
+

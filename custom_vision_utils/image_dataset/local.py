@@ -56,7 +56,9 @@ class LocalImageDataSet(ImageDataSetInterface):
         dir_config = LocalImageDataDirConfig(**config)
         local_classifier_data = LocalImageDataSet()
         for image_dir in dir_config.image_dirs:
-            for path in Path(image_dir.path_dir).glob("*.jpg"):
+            files = list(Path(image_dir.path_dir).glob("*.jpg"))
+            files.extend(list(Path(image_dir.path_dir).glob("*.jpeg")))
+            for path in files:
                 local_classifier_data.append(LocalImage(uri=path))
         return local_classifier_data
 
@@ -128,7 +130,9 @@ class LocalClassifierDataSet(ImageDataSetInterface):
         local_classifier_data = LocalClassifierDataSet()
         for image_dir in dir_config.image_dirs:
             tag_names = image_dir.tag_names
-            for path in Path(image_dir.path_dir).glob("*.jpg"):
+            files = list(Path(image_dir.path_dir).glob("*.jpg"))
+            files.extend(list(Path(image_dir.path_dir).glob("*.jpeg")))
+            for path in files:
                 local_classifier_data.append(
                     LocalClassifierImage(
                         uri=path,
