@@ -11,14 +11,18 @@ from custom_vision_utils.sdk_helpers import download_custom_vision_image
 ALLOWED_EXTENSIONS = [".jpeg", ".jpg"]
 
 
+def _validate_uri(uri: Path):
+    if uri.suffix not in ALLOWED_EXTENSIONS:
+        raise ValueError(f"filepath extension must be one of {ALLOWED_EXTENSIONS}")
+    if not uri.exists():
+        raise ValueError(f"Image file {uri} does not exist.")
+
+
 class LocalImage(ImageInterface):
 
     def __init__(self, uri: Union[str, Path], name: Optional[str] = None) -> None:
         uri = Path(uri)
-        if uri.suffix not in ALLOWED_EXTENSIONS:
-            raise ValueError(f"filepath extension must be one of {ALLOWED_EXTENSIONS}")
-        if not uri.exists():
-            raise ValueError(f"Image file {uri} does not exist.")
+        _validate_uri(uri)
 
         self.uri = uri
         self.name = self.uri.stem if not name else name
@@ -28,6 +32,7 @@ class LocalImage(ImageInterface):
 
     @staticmethod
     def from_pil_image(image: Image, uri: Union[Path, str], name: Optional[str] = None) -> "LocalImage":
+        _validate_uri(uri)
         image.save(uri)
         return LocalImage(uri=uri, name=name)
 
@@ -58,10 +63,7 @@ class LocalImage(ImageInterface):
 class LocalClassifierImage(ImageInterface):
     def __init__(self, uri: Union[str, Path], tag_names: List[str], name: Optional[str] = None) -> None:
         uri = Path(uri)
-        if uri.suffix not in ALLOWED_EXTENSIONS:
-            raise ValueError(f"filepath extension must be one of {ALLOWED_EXTENSIONS}")
-        if not uri.exists():
-            raise ValueError(f"Image file {uri} does not exist.")
+        _validate_uri(uri)
         self.uri = uri
         self.name = self.uri.stem if not name else name
         self.tag_names = tag_names
@@ -76,6 +78,7 @@ class LocalClassifierImage(ImageInterface):
         tag_names: List[str],
         name: Optional[str] = None
     ) -> "LocalClassifierImage":
+        _validate_uri(uri)
         image.save(uri)
         return LocalClassifierImage(uri=uri, tag_names=tag_names, name=name)
 
@@ -110,10 +113,7 @@ class LocalClassifierImage(ImageInterface):
 class LocalObjectDetectionImage(ImageInterface):
     def __init__(self, uri: Union[str, Path], regions: List[Region], name: Optional[str] = None) -> None:
         uri = Path(uri)
-        if uri.suffix not in ALLOWED_EXTENSIONS:
-            raise ValueError(f"filepath extension must be one of {ALLOWED_EXTENSIONS}")
-        if not uri.exists():
-            raise ValueError(f"Image file {uri} does not exist.")
+        _validate_uri(uri)
         self.uri = uri
         self.name = self.uri.stem if not name else name
         self.regions = regions
@@ -128,6 +128,7 @@ class LocalObjectDetectionImage(ImageInterface):
         regions: List[Region],
         name: Optional[str] = None,
     ) -> "LocalObjectDetectionImage":
+        _validate_uri(uri)
         image.save(uri)
         return LocalObjectDetectionImage(uri=uri, regions=regions, name=name)
 

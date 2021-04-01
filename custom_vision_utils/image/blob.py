@@ -18,6 +18,7 @@ def _validate_extension(uri: str):
     if not any(uri.endswith(ext) for ext in ALLOWED_EXTENSIONS):
         raise ValueError(f"blob_name must be one of the file types {ALLOWED_EXTENSIONS}.")
 
+
 class BlobImage(ImageInterface):
     def __init__(
             self,
