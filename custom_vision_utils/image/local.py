@@ -31,15 +31,19 @@ class LocalImage(ImageInterface):
         return Image.open(self.uri)
 
     @staticmethod
-    def from_pil_image(image: Image, uri: Path, name: Optional[str] = None) -> "LocalImage":
+    def from_pil_image(image: Image, uri: Union[Path, str], name: Optional[str] = None) -> "LocalImage":
         image.save(uri)
         return LocalImage(uri=uri, name=name)
 
     @staticmethod
     def from_azure_custom_vision_image(
             custom_vision_image,
-            folder: Path
+            folder: Union[Path, str],
+            container=None,
     ) -> "LocalImage":
+        _ = container
+        folder = Path(folder)
+
         if custom_vision_image.metadata and 'name' in custom_vision_image.metadata:
             name = custom_vision_image.metadata['name']
             local_image_path = folder / Path(name + ".jpg")
@@ -71,7 +75,7 @@ class LocalClassifierImage(ImageInterface):
     @staticmethod
     def from_pil_image(
         image: Image,
-        uri: Path,
+        uri: Union[Path, str],
         tag_names: List[str],
         name: Optional[str] = None
     ) -> "LocalClassifierImage":
@@ -81,8 +85,12 @@ class LocalClassifierImage(ImageInterface):
     @staticmethod
     def from_azure_custom_vision_image(
             custom_vision_image,
-            folder: Path
+            folder: Union[Path, str],
+            container=None,
     ) -> "LocalClassifierImage":
+        _ = container
+        folder = Path(folder)
+
         if custom_vision_image.metadata and 'name' in custom_vision_image.metadata:
             name = custom_vision_image.metadata['name']
             local_image_path = folder / Path(name + ".jpg")
@@ -118,7 +126,7 @@ class LocalObjectDetectionImage(ImageInterface):
     @staticmethod
     def from_pil_image(
         image: Image,
-        uri: Path,
+        uri: Union[Path, str],
         regions: List[Region],
         name: Optional[str] = None,
     ) -> "LocalObjectDetectionImage":
@@ -128,8 +136,12 @@ class LocalObjectDetectionImage(ImageInterface):
     @staticmethod
     def from_azure_custom_vision_image(
             custom_vision_image,
-            folder: Path
+            folder: Union[Path, str],
+            container=None,
     ) -> "LocalObjectDetectionImage":
+        _ = container
+        folder = Path(folder)
+
         if custom_vision_image.metadata and 'name' in custom_vision_image.metadata:
             name = custom_vision_image.metadata['name']
             local_image_path = folder / Path(name + ".jpg")

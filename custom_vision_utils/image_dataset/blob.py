@@ -17,14 +17,12 @@ from custom_vision_utils.configurations.blob_data import (
     BlobObjectDetectionDataFlatConfig,
 )
 from custom_vision_utils.image.blob import BlobImage, BlobClassifierImage, BlobObjectDetectionImage
-from custom_vision_utils.sdk_helpers.helpers import get_tag_dict, get_tag_id
 from custom_vision_utils.image_dataset.image_dataset_interface import ImageDataSetInterface
-from custom_vision_utils.pillow_utils import pil_image_to_byte_array
 
 
 class BlobImageDataSet(ImageDataSetInterface):
     def __init__(self, images: Union[List[BlobImage], None] = None):
-        self.images = images
+        self.images = images or []
 
     def append(self, blob_image: BlobImage) -> None:
         if not isinstance(blob_image, BlobImage):
@@ -109,7 +107,7 @@ class BlobImageDataSet(ImageDataSetInterface):
 
 class BlobClassifierDataSet(ImageDataSetInterface):
     def __init__(self, images: Union[List[BlobClassifierImage], None] = None):
-        self.images = images
+        self.images = images or []
 
     def append(self, blob_classifier_image: BlobClassifierImage) -> None:
         if not isinstance(blob_classifier_image, BlobClassifierImage):
@@ -202,7 +200,7 @@ class BlobClassifierDataSet(ImageDataSetInterface):
 
 class BlobObjectDetectionDataSet(ImageDataSetInterface):
     def __init__(self, images: Optional[List[BlobObjectDetectionImage]] = None):
-        self.images = images
+        self.images = images or []
 
     def append(self, blob_object_detection_image: BlobObjectDetectionImage) -> None:
         if not isinstance(blob_object_detection_image, BlobObjectDetectionImage):

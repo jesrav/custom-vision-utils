@@ -2,7 +2,7 @@ import os
 import tempfile
 import zipfile
 import time
-from typing import List, Union, Dict
+from typing import List, Union
 
 import requests
 from PIL import Image
@@ -261,12 +261,13 @@ def get_tag_dict(trainer, project_id):
     return {tag.name: tag.id for tag in trainer.get_tags(project_id)}
 
 
-def get_tag_id(project_tag_dict: Dict, tag_name: str) -> str:
+def get_tag_id(tag_name: str, trainer, project_id) -> str:
+    tag_dict = get_tag_dict(trainer, project_id)
     try:
-        return project_tag_dict[tag_name]
+        return tag_dict[tag_name]
     except KeyError:
         raise KeyError(
-            f"Tag `{tag_name}` not part of project tags. Allowed values are: {project_tag_dict.keys()}"
+            f"Tag `{tag_name}` not part of project tags. Allowed values are: {tag_dict.keys()}"
         )
 
 

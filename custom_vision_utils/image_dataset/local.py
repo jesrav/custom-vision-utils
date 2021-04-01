@@ -18,7 +18,7 @@ from custom_vision_utils.image_dataset.image_dataset_interface import ImageDataS
 
 class LocalImageDataSet(ImageDataSetInterface):
     def __init__(self, images: Optional[List[LocalImage]] = None):
-        self.images = images
+        self.images = images or []
 
     def append(self, local_image: LocalImage) -> None:
         if not isinstance(local_image, LocalImage):
@@ -80,7 +80,7 @@ class LocalImageDataSet(ImageDataSetInterface):
 
 class LocalClassifierDataSet(ImageDataSetInterface):
     def __init__(self, images: Optional[List[LocalClassifierImage]] = None):
-        self.images = images
+        self.images = images or []
 
     def append(self, local_classifier_image: LocalClassifierImage) -> None:
         if not isinstance(local_classifier_image, LocalClassifierImage):
@@ -157,7 +157,7 @@ class LocalClassifierDataSet(ImageDataSetInterface):
 
 class LocalObjectDetectionDataSet(ImageDataSetInterface):
     def __init__(self, images: Optional[List[LocalObjectDetectionImage]] = None):
-        self.images = images
+        self.images = images or []
 
     def append(self, local_object_detection_image: LocalObjectDetectionImage) -> None:
         if not isinstance(local_object_detection_image, LocalObjectDetectionImage):
