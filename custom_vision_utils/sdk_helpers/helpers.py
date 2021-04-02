@@ -6,7 +6,9 @@ from typing import List, Union
 
 import requests
 from PIL import Image
-from azure.cognitiveservices.vision.customvision.prediction.models import ImagePrediction
+from azure.cognitiveservices.vision.customvision.prediction.models import (
+    ImagePrediction,
+)
 from azure.cognitiveservices.vision.customvision.training.models._models_py3 import (
     CustomVisionErrorException,
 )
@@ -76,7 +78,9 @@ def get_predictor() -> CustomVisionPredictionClient:
     )
 
 
-def get_domain_id(trainer: CustomVisionTrainingClient, name, type="Classification") -> str:
+def get_domain_id(
+    trainer: CustomVisionTrainingClient, name, type="Classification"
+) -> str:
     domain_id = [
         domain.id
         for domain in trainer.get_domains()
@@ -102,7 +106,9 @@ def get_project_id(trainer: CustomVisionTrainingClient, project_name: str) -> st
         return project_ids[0]
 
 
-def get_iteration_id(trainer: CustomVisionTrainingClient, project_name: str, iteration_name: str):
+def get_iteration_id(
+    trainer: CustomVisionTrainingClient, project_name: str, iteration_name: str
+):
     project_id = get_project_id(trainer, project_name)
     iterations = trainer.get_iterations(project_id)
     try:
@@ -126,8 +132,14 @@ def get_highest_proba_result(image_results: ImageResults) -> ImageResult:
     return get_results_sorted_by_probability(image_results)[0]
 
 
-def get_predicted_tags(image_classifier_results: List[ImageClassifierResult], prob_thr=0.5) -> List[str]:
-    return [pred.tag_name for pred in image_classifier_results if pred.probability > prob_thr]
+def get_predicted_tags(
+    image_classifier_results: List[ImageClassifierResult], prob_thr=0.5
+) -> List[str]:
+    return [
+        pred.tag_name
+        for pred in image_classifier_results
+        if pred.probability > prob_thr
+    ]
 
 
 def get_predicted_tag(image_classifier_results: List[ImageClassifierResult]) -> str:
@@ -236,7 +248,7 @@ def api_classification(
     trainer: CustomVisionTrainingClient,
     predictor: CustomVisionPredictionClient,
     project_name: str,
-    iteration_name: str
+    iteration_name: str,
 ) -> List[ImageClassifierResult]:
     project_id = get_project_id(trainer, project_name)
 
@@ -252,7 +264,9 @@ def get_tag_dict(trainer: CustomVisionTrainingClient, project_id: str):
     return {tag.name: tag.id for tag in trainer.get_tags(project_id)}
 
 
-def get_tag_id(tag_name: str, trainer: CustomVisionTrainingClient, project_id: str) -> str:
+def get_tag_id(
+    tag_name: str, trainer: CustomVisionTrainingClient, project_id: str
+) -> str:
     tag_dict = get_tag_dict(trainer, project_id)
     try:
         return tag_dict[tag_name]

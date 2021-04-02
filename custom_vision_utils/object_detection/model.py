@@ -4,7 +4,10 @@ import numpy as np
 import tensorflow as tf
 from PIL import Image
 
-from custom_vision_utils.object_detection.result import ObjectDetectionResult, BoundingBox
+from custom_vision_utils.object_detection.result import (
+    ObjectDetectionResult,
+    BoundingBox,
+)
 
 
 class ObjectDetectionModel(object):

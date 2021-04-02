@@ -1,4 +1,6 @@
-from azure.cognitiveservices.vision.customvision.training.models import Region as AzureRegion
+from azure.cognitiveservices.vision.customvision.training.models import (
+    Region as AzureRegion,
+)
 from pydantic import BaseModel
 
 

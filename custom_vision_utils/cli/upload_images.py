@@ -2,7 +2,9 @@ import click
 
 from dotenv import load_dotenv, find_dotenv
 
-from custom_vision_utils.image_dataset.upload_to_custom_vision import upload_to_custom_vision
+from custom_vision_utils.image_dataset.upload_to_custom_vision import (
+    upload_to_custom_vision,
+)
 from custom_vision_utils.sdk_helpers import get_trainer, get_project_id
 from custom_vision_utils.image_dataset import (
     LocalImageDataSet,

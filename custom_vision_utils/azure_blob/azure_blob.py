@@ -63,9 +63,7 @@ def list_blobs(
     if extensions:
         for extension in extensions:
             blob_properties_filtered += [
-                blob
-                for blob in blob_properties
-                if blob.name.endswith(extension)
+                blob for blob in blob_properties if blob.name.endswith(extension)
             ]
 
     else:

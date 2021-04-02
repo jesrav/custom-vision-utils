@@ -13,6 +13,7 @@ from custom_vision_utils.object_detection import Region
 
 class LocalImageConfig(BaseModel):
     """Class representing a single image in local storage."""
+
     uri: FilePath
 
 
@@ -21,11 +22,13 @@ class LocalImageDataFlatConfig(BaseModel):
 
     The set of images make up the configuration of the image data set.
     """
+
     images: List[LocalImageConfig]
 
 
 class LocalImageDir(BaseModel):
     """Class representing a directory of images in local storage"""
+
     path_dir: DirectoryPath
 
 
@@ -34,6 +37,7 @@ class LocalImageDataDirConfig(BaseModel):
 
     The set of images  included in the directories make up the configuration of the image data set.
     """
+
     image_dirs: List[LocalImageDir]
 
 
@@ -43,6 +47,7 @@ class LocalImageDataDirConfig(BaseModel):
 ####################################################
 class LocalClassifierImageConfig(LocalImageConfig, BaseModel):
     """Class representing a single classifier image in local storage."""
+
     tag_names: List[str]
 
 
@@ -52,11 +57,13 @@ class LocalClassifierDataFlatConfig(BaseModel):
 
     The set of images make up the configuration of the image data set.
     """
+
     images: List[LocalClassifierImageConfig]
 
 
 class LocalClassifierImageDir(LocalImageDir, BaseModel):
     """Class representing a directory images, that all have the same tags, in local storage"""
+
     tag_names: List[str]
 
 
@@ -66,6 +73,7 @@ class LocalClassifierDataDirConfig(BaseModel):
     The set of images and accompanying tags included in the directories make up the configuration of the
     classification image data set.
     """
+
     image_dirs: List[LocalClassifierImageDir]
 
 
@@ -77,6 +85,7 @@ class LocalObjectDetectionImageConfig(LocalImageConfig, BaseModel):
     """Class representing a single object detection image in local storage,
     including regions with tags.
     """
+
     regions: List[Region]
 
 
@@ -86,4 +95,5 @@ class LocalObjectDetectionDataFlatConfig(BaseModel):
 
     The set of images make up the configuration of the image data set.
     """
+
     images: List[LocalObjectDetectionImageConfig]

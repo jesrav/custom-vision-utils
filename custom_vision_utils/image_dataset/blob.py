@@ -14,8 +14,14 @@ from custom_vision_utils.configurations.blob_data import (
     BlobObjectDetectionImageConfig,
     BlobObjectDetectionDataFlatConfig,
 )
-from custom_vision_utils.image.blob import BlobImage, BlobClassifierImage, BlobObjectDetectionImage
-from custom_vision_utils.image_dataset.image_dataset_interface import ImageDataSetInterface
+from custom_vision_utils.image.blob import (
+    BlobImage,
+    BlobClassifierImage,
+    BlobObjectDetectionImage,
+)
+from custom_vision_utils.image_dataset.image_dataset_interface import (
+    ImageDataSetInterface,
+)
 
 
 class BlobImageDataSet(ImageDataSetInterface):
@@ -29,9 +35,7 @@ class BlobImageDataSet(ImageDataSetInterface):
 
     def __add__(self, other):
         if not isinstance(other, BlobImageDataSet):
-            raise ValueError(
-                "You can only add other objects of type BlobImageData."
-            )
+            raise ValueError("You can only add other objects of type BlobImageData.")
         return BlobImageDataSet(images=self.images + other.images)
 
     def __len__(self):
@@ -60,7 +64,7 @@ class BlobImageDataSet(ImageDataSetInterface):
                     BlobImage(
                         uri=blob.name,
                         container_name=container_name,
-                        connection_str=connection_str
+                        connection_str=connection_str,
                     )
                 )
         return blob_image_data
@@ -77,7 +81,7 @@ class BlobImageDataSet(ImageDataSetInterface):
                 BlobImage(
                     uri=uri,
                     container_name=container_name,
-                    connection_str=connection_str
+                    connection_str=connection_str,
                 )
             )
         return blob_image_data
@@ -94,10 +98,7 @@ class BlobImageDataSet(ImageDataSetInterface):
     def get_config(self) -> BlobImageDataFlatConfig:
         return BlobImageDataFlatConfig(
             images=[
-                BlobImageConfig(
-                    uri=image.uri,
-                    container_name=image.container_name
-                )
+                BlobImageConfig(uri=image.uri, container_name=image.container_name)
                 for image in self
             ],
         )
@@ -150,7 +151,7 @@ class BlobClassifierDataSet(ImageDataSetInterface):
                         uri=blob.name,
                         tag_names=tag_names,
                         container_name=container_name,
-                        connection_str=connection_str
+                        connection_str=connection_str,
                     )
                 )
         return blob_classifier_data
@@ -169,7 +170,7 @@ class BlobClassifierDataSet(ImageDataSetInterface):
                     uri=uri,
                     tag_names=tag_names,
                     container_name=container_name,
-                    connection_str=connection_str
+                    connection_str=connection_str,
                 )
             )
         return blob_classifier_data
@@ -189,7 +190,7 @@ class BlobClassifierDataSet(ImageDataSetInterface):
                 BlobClassifierImageConfig(
                     uri=image.uri,
                     tag_names=image.tag_names,
-                    container_name=image.container_name
+                    container_name=image.container_name,
                 )
                 for image in self
             ],
@@ -202,7 +203,9 @@ class BlobObjectDetectionDataSet(ImageDataSetInterface):
 
     def append(self, blob_object_detection_image: BlobObjectDetectionImage) -> None:
         if not isinstance(blob_object_detection_image, BlobObjectDetectionImage):
-            raise ValueError("blob_object_detection_image must be type BlobObjectDetectionImage.")
+            raise ValueError(
+                "blob_object_detection_image must be type BlobObjectDetectionImage."
+            )
         if not self.images:
             self.images = [blob_object_detection_image]
         else:
@@ -239,7 +242,7 @@ class BlobObjectDetectionDataSet(ImageDataSetInterface):
                     uri=uri,
                     regions=regions,
                     container_name=container_name,
-                    connection_str=connection_str
+                    connection_str=connection_str,
                 )
             )
         return blob_object_detection_data
@@ -256,7 +259,7 @@ class BlobObjectDetectionDataSet(ImageDataSetInterface):
                 BlobObjectDetectionImageConfig(
                     uri=image.uri,
                     container_name=image.container_name,
-                    regions=image.regions
+                    regions=image.regions,
                 )
                 for image in self
             ]

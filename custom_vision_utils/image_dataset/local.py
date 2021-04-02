@@ -10,10 +10,17 @@ from custom_vision_utils.configurations.local_data import (
     LocalClassifierDataFlatConfig,
     LocalClassifierDataDirConfig,
     LocalClassifierImageConfig,
-    LocalObjectDetectionDataFlatConfig, LocalObjectDetectionImageConfig,
+    LocalObjectDetectionDataFlatConfig,
+    LocalObjectDetectionImageConfig,
 )
-from custom_vision_utils.image.local import LocalImage, LocalClassifierImage, LocalObjectDetectionImage
-from custom_vision_utils.image_dataset.image_dataset_interface import ImageDataSetInterface
+from custom_vision_utils.image.local import (
+    LocalImage,
+    LocalClassifierImage,
+    LocalObjectDetectionImage,
+)
+from custom_vision_utils.image_dataset.image_dataset_interface import (
+    ImageDataSetInterface,
+)
 
 
 class LocalImageDataSet(ImageDataSetInterface):
@@ -73,10 +80,7 @@ class LocalImageDataSet(ImageDataSetInterface):
 
     def get_config(self) -> LocalImageDataFlatConfig:
         return LocalImageDataFlatConfig(
-            images=[
-                LocalImageConfig(uri=image.uri)
-                for image in self
-            ]
+            images=[LocalImageConfig(uri=image.uri) for image in self]
         )
 
 
@@ -86,7 +90,9 @@ class LocalClassifierDataSet(ImageDataSetInterface):
 
     def append(self, local_classifier_image: LocalClassifierImage) -> None:
         if not isinstance(local_classifier_image, LocalClassifierImage):
-            raise ValueError("local_classifier_image must be type LocalClassifierImage.")
+            raise ValueError(
+                "local_classifier_image must be type LocalClassifierImage."
+            )
         if not self.images:
             self.images = [local_classifier_image]
         else:
@@ -134,10 +140,7 @@ class LocalClassifierDataSet(ImageDataSetInterface):
             files.extend(list(Path(image_dir.path_dir).glob("*.jpeg")))
             for path in files:
                 local_classifier_data.append(
-                    LocalClassifierImage(
-                        uri=path,
-                        tag_names=tag_names
-                    )
+                    LocalClassifierImage(uri=path, tag_names=tag_names)
                 )
         return local_classifier_data
 
@@ -165,7 +168,9 @@ class LocalObjectDetectionDataSet(ImageDataSetInterface):
 
     def append(self, local_object_detection_image: LocalObjectDetectionImage) -> None:
         if not isinstance(local_object_detection_image, LocalObjectDetectionImage):
-            raise ValueError("local_object_detection_image must be type LocalObjectDetectionImage.")
+            raise ValueError(
+                "local_object_detection_image must be type LocalObjectDetectionImage."
+            )
         if not self.images:
             self.images = [local_object_detection_image]
         else:

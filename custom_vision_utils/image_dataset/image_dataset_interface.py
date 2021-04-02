@@ -7,7 +7,6 @@ import yaml
 
 
 class ImageDataSetInterface(ABC):
-
     @abstractmethod
     def append(self, other) -> None:
         pass

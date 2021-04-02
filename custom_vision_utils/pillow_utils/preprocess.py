@@ -39,9 +39,7 @@ def crop_image(
 
 
 def apply_augmentation_sequence_to_pil_images(
-        pil_image: list,
-        aug_sequence: iaa.Sequential,
-        n_augmented_images: int = 5
+    pil_image: list, aug_sequence: iaa.Sequential, n_augmented_images: int = 5
 ) -> list:
     """Apply augmentation sequence to list of pillow images."""
     array_images = [array(pil_image) for _ in range(n_augmented_images)]
