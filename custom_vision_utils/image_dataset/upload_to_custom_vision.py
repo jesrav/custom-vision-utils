@@ -1,4 +1,7 @@
-from azure.cognitiveservices.vision.customvision.training.models import ImageFileCreateEntry, ImageFileCreateBatch
+from azure.cognitiveservices.vision.customvision.training.models import (
+    ImageFileCreateEntry,
+    ImageFileCreateBatch,
+)
 from rich.progress import track
 
 from custom_vision_utils.image import (
@@ -15,58 +18,66 @@ from custom_vision_utils.sdk_helpers.helpers import get_tag_id
 
 def _create_blob_image_file_entry(image: BlobImage, trainer, project_id):
     return ImageFileCreateEntry(
-        name=image.name,
-        contents=pil_image_to_byte_array(image.get_pil_image())
+        name=image.name, contents=pil_image_to_byte_array(image.get_pil_image())
     )
 
 
-def _create_blob_classier_image_file_entry(image: BlobClassifierImage, trainer, project_id):
+def _create_blob_classier_image_file_entry(
+    image: BlobClassifierImage, trainer, project_id
+):
     return ImageFileCreateEntry(
         contents=pil_image_to_byte_array(image.get_pil_image()),
         tag_ids=[
             get_tag_id(tag_name=tag_name, trainer=trainer, project_id=project_id)
             for tag_name in image.tag_names
-        ]
+        ],
     )
 
 
-def _create_blob_object_detection_image_file_entry(image: BlobObjectDetectionImage, trainer, project_id):
+def _create_blob_object_detection_image_file_entry(
+    image: BlobObjectDetectionImage, trainer, project_id
+):
     return ImageFileCreateEntry(
         contents=pil_image_to_byte_array(image.get_pil_image()),
         regions=[
-            region.to_azure_region(tag_id=get_tag_id(region.tag_name, trainer, project_id))
+            region.to_azure_region(
+                tag_id=get_tag_id(region.tag_name, trainer, project_id)
+            )
             for region in image.regions
-        ]
+        ],
     )
 
 
 def _create_local_image_file_entry(image: BlobImage, trainer, project_id):
     with open(image.uri, "rb") as image_contents:
-        return ImageFileCreateEntry(
-            name=image.name,
-            contents=image_contents.read()
-        )
+        return ImageFileCreateEntry(name=image.name, contents=image_contents.read())
 
 
-def _create_local_classier_image_file_entry(image: BlobClassifierImage, trainer, project_id):
+def _create_local_classier_image_file_entry(
+    image: BlobClassifierImage, trainer, project_id
+):
     with open(image.uri, "rb") as image_contents:
         return ImageFileCreateEntry(
             contents=image_contents.read(),
             tag_ids=[
                 get_tag_id(tag_name=tag_name, trainer=trainer, project_id=project_id)
                 for tag_name in image.tag_names
-            ]
+            ],
         )
 
 
-def _create_local_object_detection_image_file_entry(image: BlobObjectDetectionImage, trainer, project_id):
+def _create_local_object_detection_image_file_entry(
+    image: BlobObjectDetectionImage, trainer, project_id
+):
     with open(image.uri, "rb") as image_contents:
         return ImageFileCreateEntry(
             contents=image_contents.read(),
             regions=[
-                region.to_azure_region(tag_id=get_tag_id(region.tag_name, trainer, project_id))
+                region.to_azure_region(
+                    tag_id=get_tag_id(region.tag_name, trainer, project_id)
+                )
                 for region in image.regions
-            ]
+            ],
         )
 
 
@@ -95,9 +106,13 @@ def _upload_image(image, trainer, project_id):
     _ = trainer.create_images_from_files(
         project_id,
         ImageFileCreateBatch(
-            images=[_create_image_file_entry(image=image, trainer=trainer, project_id=project_id)],
+            images=[
+                _create_image_file_entry(
+                    image=image, trainer=trainer, project_id=project_id
+                )
+            ],
             metadata={"name": image.name},
-        )
+        ),
     )
 
 
@@ -105,4 +120,3 @@ def upload_to_custom_vision(images, trainer, project_id):
     """Upload images to Custom vision project."""
     for image in track(images):
         _upload_image(image, trainer, project_id)
-

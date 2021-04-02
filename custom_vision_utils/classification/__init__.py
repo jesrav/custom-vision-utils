@@ -1,2 +1,2 @@
-from .result import ImageClassifierResultResult
+from .result import ImageClassifierResult
 from .model import ImageClassifierModel

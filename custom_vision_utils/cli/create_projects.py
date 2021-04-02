@@ -65,9 +65,7 @@ def create_projects(projects_config_path):
     load_dotenv(find_dotenv())
 
     if Path(projects_config_path).suffix != ".yaml":
-        raise ValueError(
-            "File extension of `projects-config-path` must be `.yaml`."
-        )
+        raise ValueError("File extension of `projects-config-path` must be `.yaml`.")
     custom_vision_configs = load_custom_vision_project_configs(
         Path(projects_config_path)
     )

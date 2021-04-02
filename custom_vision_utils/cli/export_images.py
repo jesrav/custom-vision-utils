@@ -13,7 +13,7 @@ from custom_vision_utils.image import (
     LocalObjectDetectionImage,
     BlobImage,
     BlobClassifierImage,
-    BlobObjectDetectionImage
+    BlobObjectDetectionImage,
 )
 from custom_vision_utils.image_dataset import (
     LocalImageDataSet,
@@ -26,7 +26,7 @@ from custom_vision_utils.image_dataset import (
 
 load_dotenv((find_dotenv()))
 
-SUPPORTED_DOMAIN_TYPES = ['Classification', 'ObjectDetection', None]
+SUPPORTED_DOMAIN_TYPES = ["Classification", "ObjectDetection", None]
 
 ImageDataSet = Union[
     LocalImageDataSet,
@@ -57,16 +57,18 @@ def get_domain_type_of_project(trainer, project_name: str) -> str:
     return trainer.get_domain(project_domain_id).type
 
 
-def select_image_data_set(domain_type: str, container_name_chosen: bool) -> ImageDataSet:
+def select_image_data_set(
+    domain_type: str, container_name_chosen: bool
+) -> ImageDataSet:
     if container_name_chosen and domain_type is None:
         return BlobImageDataSet()
     elif domain_type is None:
         return LocalImageDataSet()
-    elif domain_type == 'Classification' and container_name_chosen:
+    elif domain_type == "Classification" and container_name_chosen:
         return BlobClassifierDataSet()
-    elif domain_type == 'Classification':
+    elif domain_type == "Classification":
         return LocalClassifierDataSet()
-    elif domain_type == 'ObjectDetection' and container_name_chosen:
+    elif domain_type == "ObjectDetection" and container_name_chosen:
         return BlobObjectDetectionDataSet()
     else:
         return LocalObjectDetectionDataSet()
@@ -77,11 +79,11 @@ def select_image_class(domain_type: str, container_name_chosen: bool) -> ImageCl
         return BlobImage
     elif domain_type is None:
         return LocalImage
-    elif domain_type == 'Classification' and container_name_chosen:
+    elif domain_type == "Classification" and container_name_chosen:
         return BlobClassifierImage
-    elif domain_type == 'Classification':
+    elif domain_type == "Classification":
         return LocalClassifierImage
-    elif domain_type == 'ObjectDetection' and container_name_chosen:
+    elif domain_type == "ObjectDetection" and container_name_chosen:
         return BlobObjectDetectionImage
     else:
         return LocalObjectDetectionImage
@@ -156,8 +158,7 @@ def export_images(
         project_name=project_name,
         image_outdir=image_outdir,
         container_name=container_name,
-        untagged=untagged
+        untagged=untagged,
     )
     if data_config_outpath and image_data:
         image_data.write_config(outfile=Path(data_config_outpath))
-

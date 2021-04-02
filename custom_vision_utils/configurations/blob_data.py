@@ -13,6 +13,7 @@ from custom_vision_utils.object_detection import Region
 
 class BlobImageConfig(BaseModel):
     """Class representing a single image in blob storage."""
+
     uri: str
     container_name: str
 
@@ -22,11 +23,13 @@ class BlobImageDataFlatConfig(BaseModel):
 
     The set of images make up the configuration of the image data set.
     """
+
     images: List[BlobImageConfig]
 
 
 class BlobImageDir(BaseModel):
     """Class representing a directory of images in blob storage"""
+
     blob_dir: str
     container_name: str
 
@@ -36,6 +39,7 @@ class BlobImageDataDirConfig(BaseModel):
 
     The set of images  included in the directories make up the configuration of the image data set.
     """
+
     image_dirs: List[BlobImageDir]
 
 
@@ -45,6 +49,7 @@ class BlobImageDataDirConfig(BaseModel):
 ####################################################
 class BlobClassifierImageConfig(BlobImageConfig, BaseModel):
     """Class representing a single classifier image in blob storage."""
+
     tag_names: List[str]
 
 
@@ -54,11 +59,13 @@ class BlobClassifierDataFlatConfig(BaseModel):
 
     The set of images make up the configuration of the image data set.
     """
+
     images: List[BlobClassifierImageConfig]
 
 
 class BlobClassifierImageDir(BlobImageDir, BaseModel):
     """Class representing a directory images, that all have the same tags, in blob storage"""
+
     tag_names: List[str]
 
 
@@ -68,6 +75,7 @@ class BlobClassifierDataDirConfig(BaseModel):
     The set of images and accompanying tags included in the directories make up the configuration of the
     classification image data set.
     """
+
     image_dirs: List[BlobClassifierImageDir]
 
 
@@ -79,6 +87,7 @@ class BlobObjectDetectionImageConfig(BlobImageConfig, BaseModel):
     """Class representing a single object detection image in blob storage,
     including regions with tags.
     """
+
     regions: List[Region]
 
 
@@ -88,4 +97,5 @@ class BlobObjectDetectionDataFlatConfig(BaseModel):
 
     The set of images make up the configuration of the image data set.
     """
+
     images: List[BlobObjectDetectionImageConfig]

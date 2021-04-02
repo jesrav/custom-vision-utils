@@ -33,4 +33,3 @@ def export_model(project_name, outpath, iteration_name):
     )
 
     download_model_iteration_as_tensorflow(project_name, Path(outpath), iteration_id)
-

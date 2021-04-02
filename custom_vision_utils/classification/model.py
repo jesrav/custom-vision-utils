@@ -5,7 +5,7 @@ import numpy as np
 import tensorflow as tf
 from PIL import Image
 
-from custom_vision_utils.classification.result import ImageClassifierResultResult
+from custom_vision_utils.classification.result import ImageClassifierResult
 
 
 class ImageClassifierModel:
@@ -87,7 +87,7 @@ class ImageClassifierModel:
                     image = image.transpose(Image.FLIP_LEFT_RIGHT)
         return image
 
-    def predict_image(self, image: Image) -> List[ImageClassifierResultResult]:
+    def predict_image(self, image: Image) -> List[ImageClassifierResult]:
 
         image = self.convert_to_opencv(image)
         image = self.resize_down_to_1600_max_dim(image)
@@ -106,6 +106,6 @@ class ImageClassifierModel:
             )[0]
 
         return [
-            ImageClassifierResultResult(probability=float(proba), tag_name=label)
+            ImageClassifierResult(probability=float(proba), tag_name=label)
             for proba, label in zip(predictions, self.labels)
         ]

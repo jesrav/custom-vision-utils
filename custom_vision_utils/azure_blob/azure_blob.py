@@ -1,5 +1,5 @@
 import os
-from typing import Optional, Iterable, List
+from typing import Optional, List
 
 from azure.storage.blob import BlobClient, BlobServiceClient
 from azure.storage.blob._models import BlobProperties
@@ -63,9 +63,7 @@ def list_blobs(
     if extensions:
         for extension in extensions:
             blob_properties_filtered += [
-                blob
-                for blob in blob_properties
-                if blob.name.endswith(extension)
+                blob for blob in blob_properties if blob.name.endswith(extension)
             ]
 
     else:

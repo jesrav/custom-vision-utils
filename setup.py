@@ -22,8 +22,8 @@ setup(
         "pyyaml",
     ],
     entry_points={
-        'console_scripts': [
-            'cvis = custom_vision_utils.cli.cli:cli',
+        "console_scripts": [
+            "cvis = custom_vision_utils.cli.cli:cli",
         ]
-    }
+    },
 )

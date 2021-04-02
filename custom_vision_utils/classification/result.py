@@ -1,7 +1,7 @@
 from pydantic import BaseModel
 
 
-class ImageClassifierResultResult(BaseModel):
+class ImageClassifierResult(BaseModel):
     tag_name: str
     probability: float
 

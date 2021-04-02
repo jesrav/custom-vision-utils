@@ -19,7 +19,6 @@ def _validate_uri(uri: Path):
 
 
 class LocalImage(ImageInterface):
-
     def __init__(self, uri: Union[str, Path], name: Optional[str] = None) -> None:
         uri = Path(uri)
         _validate_uri(uri)
@@ -31,22 +30,24 @@ class LocalImage(ImageInterface):
         return Image.open(self.uri)
 
     @staticmethod
-    def from_pil_image(image: Image, uri: Union[Path, str], name: Optional[str] = None) -> "LocalImage":
+    def from_pil_image(
+        image: Image, uri: Union[Path, str], name: Optional[str] = None
+    ) -> "LocalImage":
         _validate_uri(uri)
         image.save(uri)
         return LocalImage(uri=uri, name=name)
 
     @staticmethod
     def from_azure_custom_vision_image(
-            custom_vision_image,
-            folder: Union[Path, str],
-            container=None,
+        custom_vision_image,
+        folder: Union[Path, str],
+        container=None,
     ) -> "LocalImage":
         _ = container
         folder = Path(folder)
 
-        if custom_vision_image.metadata and 'name' in custom_vision_image.metadata:
-            name = custom_vision_image.metadata['name']
+        if custom_vision_image.metadata and "name" in custom_vision_image.metadata:
+            name = custom_vision_image.metadata["name"]
             local_image_path = folder / Path(name + ".jpg")
         else:
             name = None
@@ -54,14 +55,15 @@ class LocalImage(ImageInterface):
 
         with open(local_image_path, "wb") as f:
             download_custom_vision_image(
-                custom_vision_image=custom_vision_image,
-                file_handler=f
+                custom_vision_image=custom_vision_image, file_handler=f
             )
         return LocalImage(uri=local_image_path, name=name)
 
 
 class LocalClassifierImage(ImageInterface):
-    def __init__(self, uri: Union[str, Path], tag_names: List[str], name: Optional[str] = None) -> None:
+    def __init__(
+        self, uri: Union[str, Path], tag_names: List[str], name: Optional[str] = None
+    ) -> None:
         uri = Path(uri)
         _validate_uri(uri)
         self.uri = uri
@@ -76,7 +78,7 @@ class LocalClassifierImage(ImageInterface):
         image: Image,
         uri: Union[Path, str],
         tag_names: List[str],
-        name: Optional[str] = None
+        name: Optional[str] = None,
     ) -> "LocalClassifierImage":
         _validate_uri(uri)
         image.save(uri)
@@ -84,15 +86,15 @@ class LocalClassifierImage(ImageInterface):
 
     @staticmethod
     def from_azure_custom_vision_image(
-            custom_vision_image,
-            folder: Union[Path, str],
-            container=None,
+        custom_vision_image,
+        folder: Union[Path, str],
+        container=None,
     ) -> "LocalClassifierImage":
         _ = container
         folder = Path(folder)
 
-        if custom_vision_image.metadata and 'name' in custom_vision_image.metadata:
-            name = custom_vision_image.metadata['name']
+        if custom_vision_image.metadata and "name" in custom_vision_image.metadata:
+            name = custom_vision_image.metadata["name"]
             local_image_path = folder / Path(name + ".jpg")
         else:
             name = None
@@ -100,18 +102,19 @@ class LocalClassifierImage(ImageInterface):
 
         with open(local_image_path, "wb") as f:
             download_custom_vision_image(
-                custom_vision_image=custom_vision_image,
-                file_handler=f
+                custom_vision_image=custom_vision_image, file_handler=f
             )
         return LocalClassifierImage(
             uri=local_image_path,
             tag_names=[tag.tag_name for tag in custom_vision_image.tags],
-            name=name
+            name=name,
         )
 
 
 class LocalObjectDetectionImage(ImageInterface):
-    def __init__(self, uri: Union[str, Path], regions: List[Region], name: Optional[str] = None) -> None:
+    def __init__(
+        self, uri: Union[str, Path], regions: List[Region], name: Optional[str] = None
+    ) -> None:
         uri = Path(uri)
         _validate_uri(uri)
         self.uri = uri
@@ -134,15 +137,15 @@ class LocalObjectDetectionImage(ImageInterface):
 
     @staticmethod
     def from_azure_custom_vision_image(
-            custom_vision_image,
-            folder: Union[Path, str],
-            container=None,
+        custom_vision_image,
+        folder: Union[Path, str],
+        container=None,
     ) -> "LocalObjectDetectionImage":
         _ = container
         folder = Path(folder)
 
-        if custom_vision_image.metadata and 'name' in custom_vision_image.metadata:
-            name = custom_vision_image.metadata['name']
+        if custom_vision_image.metadata and "name" in custom_vision_image.metadata:
+            name = custom_vision_image.metadata["name"]
             local_image_path = folder / Path(name + ".jpg")
         else:
             name = None
@@ -150,8 +153,7 @@ class LocalObjectDetectionImage(ImageInterface):
 
         with open(local_image_path, "wb") as f:
             download_custom_vision_image(
-                custom_vision_image=custom_vision_image,
-                file_handler=f
+                custom_vision_image=custom_vision_image, file_handler=f
             )
         return LocalObjectDetectionImage(
             uri=local_image_path,
@@ -163,8 +165,9 @@ class LocalObjectDetectionImage(ImageInterface):
                         width=region.width,
                         height=region.height,
                     ),
-                    tag_name=region.tag_name
-                ) for region in custom_vision_image.regions],
-            name=name
+                    tag_name=region.tag_name,
+                )
+                for region in custom_vision_image.regions
+            ],
+            name=name,
         )
-
