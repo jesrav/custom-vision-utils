@@ -8,7 +8,7 @@ from numpy import array
 def pil_image_to_byte_array(image: Image, format: str = "jpeg") -> bytes:
     """Convert Pillow image to byte array."""
     img_byte_arr = BytesIO()
-    image.save(img_byte_arr, format=image.format if image.format else format)
+    image.save(img_byte_arr, format=image.format or format)
     return img_byte_arr.getvalue()
 
 
@@ -35,17 +35,15 @@ def crop_image(
     right = int((xmin + width) * img_width)
     top = int(ymax * img_height)
     bottom = int((ymax + height) * img_height)
-    img_crop = image.crop((left, top, right, bottom))
-
-    return img_crop
+    return image.crop((left, top, right, bottom))
 
 
 def apply_augmentation_sequence_to_pil_images(
         pil_image: list,
         aug_sequence: iaa.Sequential,
-        n_augumented_images: int = 5
+        n_augmented_images: int = 5
 ) -> list:
     """Apply augmentation sequence to list of pillow images."""
-    array_images = [array(pil_image) for _ in range(n_augumented_images)]
+    array_images = [array(pil_image) for _ in range(n_augmented_images)]
     augmented_array_images = aug_sequence(images=array_images)
     return [Image.fromarray(array_image) for array_image in augmented_array_images]
