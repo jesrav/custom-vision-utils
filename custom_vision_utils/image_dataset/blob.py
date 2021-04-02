@@ -118,7 +118,7 @@ class BlobClassifierDataSet(ImageDataSetInterface):
     def __add__(self, other):
         if not isinstance(other, BlobClassifierDataSet):
             raise ValueError(
-                "You can only add ther objects of type BlobClassifierData."
+                "You can only add other objects of type BlobClassifierData."
             )
         return BlobClassifierDataSet(images=self.images + other.images)
 

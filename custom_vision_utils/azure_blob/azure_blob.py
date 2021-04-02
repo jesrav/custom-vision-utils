@@ -1,5 +1,5 @@
 import os
-from typing import Optional, Iterable, List
+from typing import Optional, List
 
 from azure.storage.blob import BlobClient, BlobServiceClient
 from azure.storage.blob._models import BlobProperties

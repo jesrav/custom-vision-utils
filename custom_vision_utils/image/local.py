@@ -167,4 +167,3 @@ class LocalObjectDetectionImage(ImageInterface):
                 ) for region in custom_vision_image.regions],
             name=name
         )
-

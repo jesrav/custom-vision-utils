@@ -31,7 +31,7 @@ class BlobImage(ImageInterface):
         self.uri = uri
         self.container_name = container_name
         self.name = Path(self.uri).stem if not name else name
-        self.blob = get_blob(container_name=container_name, blob_name=self.uri,connection_string=connection_str)
+        self.blob = get_blob(container_name=container_name, blob_name=self.uri, connection_string=connection_str)
 
     def get_pil_image(self) -> Image:
         handler = BytesIO()

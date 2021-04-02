@@ -160,4 +160,3 @@ def export_images(
     )
     if data_config_outpath and image_data:
         image_data.write_config(outfile=Path(data_config_outpath))
-

@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import Optional, List, Dict, Union, Iterable
+from typing import Optional, List, Dict, Union
 
 import yaml
 
@@ -95,7 +95,7 @@ class LocalClassifierDataSet(ImageDataSetInterface):
     def __add__(self, other):
         if not isinstance(other, LocalClassifierDataSet):
             raise ValueError(
-                "You can only add ther objects of type LocalClassifierData."
+                "You can only add other objects of type LocalClassifierData."
             )
         return LocalClassifierDataSet(images=self.images + other.images)
 
@@ -152,7 +152,7 @@ class LocalClassifierDataSet(ImageDataSetInterface):
 
     def get_config(self) -> LocalClassifierDataFlatConfig:
         return LocalClassifierDataFlatConfig(
-            images = [
+            images=[
                 LocalClassifierImageConfig(uri=image.uri, tag_names=image.tag_names)
                 for image in self
             ]
@@ -174,7 +174,7 @@ class LocalObjectDetectionDataSet(ImageDataSetInterface):
     def __add__(self, other):
         if not isinstance(other, LocalObjectDetectionDataSet):
             raise ValueError(
-                "You can only add ther objects of type LocalClassifierData."
+                "You can only add other objects of type LocalClassifierData."
             )
         return LocalObjectDetectionDataSet(images=self.images + other.images)
 
@@ -211,7 +211,7 @@ class LocalObjectDetectionDataSet(ImageDataSetInterface):
 
     def get_config(self) -> LocalObjectDetectionDataFlatConfig:
         return LocalObjectDetectionDataFlatConfig(
-            images = [
+            images=[
                 LocalObjectDetectionImageConfig(uri=image.uri, regions=image.regions)
                 for image in self
             ]

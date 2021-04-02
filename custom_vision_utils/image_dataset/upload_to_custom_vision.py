@@ -105,4 +105,3 @@ def upload_to_custom_vision(images, trainer, project_id):
     """Upload images to Custom vision project."""
     for image in track(images):
         _upload_image(image, trainer, project_id)
-

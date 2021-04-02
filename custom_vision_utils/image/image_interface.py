@@ -17,7 +17,3 @@ class ImageInterface(ABC):
             container
     ):
         pass
-
-
-
-

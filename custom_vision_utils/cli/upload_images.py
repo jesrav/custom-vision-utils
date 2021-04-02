@@ -46,4 +46,3 @@ def upload_images(project_name, image_data_config_path):
 
     logger.info("Uploading images to Azure.")
     upload_to_custom_vision(image_data, trainer, project_id=project_id)
-
