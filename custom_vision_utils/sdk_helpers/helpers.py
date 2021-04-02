@@ -6,9 +6,7 @@ from typing import List, Union
 
 import requests
 from PIL import Image
-from azure.cognitiveservices.vision.customvision.prediction.models import (
-    ImagePrediction,
-)
+from azure.cognitiveservices.vision.customvision.prediction.models import ImagePrediction
 from azure.cognitiveservices.vision.customvision.training.models._models_py3 import (
     CustomVisionErrorException,
 )
@@ -21,8 +19,12 @@ from azure.cognitiveservices.vision.customvision.prediction import (
 from msrest.authentication import ApiKeyCredentials
 
 from custom_vision_utils.pillow_utils import pil_image_to_byte_array, crop_image
-from custom_vision_utils.classification.result import ImageClassifierResultResult
+from custom_vision_utils.classification.result import ImageClassifierResult
 from custom_vision_utils.object_detection.result import ObjectDetectionResult
+
+
+ImageResult = Union[ObjectDetectionResult, ImageClassifierResult]
+ImageResults = Union[List[ObjectDetectionResult], List[ImageClassifierResult]]
 
 
 def get_training_key_from_env() -> str:
@@ -62,19 +64,19 @@ def get_prediction_credentials():
     )
 
 
-def get_trainer():
+def get_trainer() -> CustomVisionTrainingClient:
     return CustomVisionTrainingClient(
         get_endpoint_from_env(), get_training_credentials()
     )
 
 
-def get_predictor():
+def get_predictor() -> CustomVisionPredictionClient:
     return CustomVisionPredictionClient(
         get_endpoint_from_env(), get_prediction_credentials()
     )
 
 
-def get_domain_id(trainer, name, type="Classification"):
+def get_domain_id(trainer: CustomVisionTrainingClient, name, type="Classification") -> str:
     domain_id = [
         domain.id
         for domain in trainer.get_domains()
@@ -86,21 +88,21 @@ def get_domain_id(trainer, name, type="Classification"):
         return domain_id
 
 
-def get_project_names(trainer):
+def get_project_names(trainer: CustomVisionTrainingClient) -> List[str]:
     return [p.name for p in trainer.get_projects()]
 
 
-def get_project_id(trainer, project_name):
+def get_project_id(trainer: CustomVisionTrainingClient, project_name: str) -> str:
     project_ids = [
         project.id for project in trainer.get_projects() if project.name == project_name
     ]
-    if len(project_ids) == 0:
+    if not project_ids:
         raise KeyError(f"No project with name {project_name}")
     else:
         return project_ids[0]
 
 
-def get_iteration_id(trainer, project_name, iteration_name):
+def get_iteration_id(trainer: CustomVisionTrainingClient, project_name: str, iteration_name: str):
     project_id = get_project_id(trainer, project_name)
     iterations = trainer.get_iterations(project_id)
     try:
@@ -116,33 +118,20 @@ def get_latest_iteration(iterations):
     return sorted(iterations, key=lambda x: x.created, reverse=True)[0]
 
 
-def get_predictions_sorted_by_probability(
-    image_prediction: Union[
-        List[ObjectDetectionResult], List[ImageClassifierResultResult]
-    ]
-) -> List[ObjectDetectionResult]:
-    return sorted(image_prediction, key=lambda x: x.probability, reverse=True)
+def get_results_sorted_by_probability(image_results: ImageResults) -> ImageResults:
+    return sorted(image_results, key=lambda x: x.probability, reverse=True)
 
 
-def get_highest_proba_prediction(
-    image_prediction: Union[
-        List[ObjectDetectionResult], List[ImageClassifierResultResult]
-    ]
-) -> ObjectDetectionResult:
-    return get_predictions_sorted_by_probability(image_prediction)[0]
+def get_highest_proba_result(image_results: ImageResults) -> ImageResult:
+    return get_results_sorted_by_probability(image_results)[0]
 
 
-def get_predicted_tags(
-    image_prediction: Union[
-        List[ObjectDetectionResult], List[ImageClassifierResultResult]
-    ],
-    prob_thr=0.5,
-):
-    return [pred.tag_name for pred in image_prediction if pred.probability > prob_thr]
+def get_predicted_tags(image_classifier_results: List[ImageClassifierResult], prob_thr=0.5) -> List[str]:
+    return [pred.tag_name for pred in image_classifier_results if pred.probability > prob_thr]
 
 
-def get_predicted_tag(image_prediction):
-    return get_highest_proba_prediction(image_prediction).tag_name
+def get_predicted_tag(image_classifier_results: List[ImageClassifierResult]) -> str:
+    return get_highest_proba_result(image_classifier_results).tag_name
 
 
 def crop_image_based_on_object_detection(
@@ -153,32 +142,31 @@ def crop_image_based_on_object_detection(
 ) -> Image:
     """Crop pillow_utils based on object detection custom_vision_results.
 
-    If The cropped regiona region is wider than a threshold, the pillow_utils is not cropped
-    Padding is added to the cropped pillow_utils.
+    If the cropped region is wider than a threshold, the image is not cropped
+    Padding is added to the cropping..
 
-    :param image: Pillow pillow_utils
+    :param image: Pillow image
     :param object_detection_result: Object detection result
     :param threshold_width_crop: If the crop width is over threshold_width_crop,
-    the pillow_utils is not cropped. Between 0 and 1.
+    the image is not cropped. Between 0 and 1.
     :param crop_padding: Padding added to crop. Between 0 and 1.
     :return:
     """
     bbox = object_detection_result.bounding_box
     if bbox.width < threshold_width_crop:
-        cropped_image = crop_image(
-            image,
-            max(bbox.left - (crop_padding / 2), 0),
-            max(bbox.top - (crop_padding / 2), 0),
-            min(
+        return crop_image(
+            image=image,
+            xmin=max(bbox.left - (crop_padding / 2), 0),
+            ymax=max(bbox.top - (crop_padding / 2), 0),
+            width=min(
                 bbox.width + crop_padding,
                 1 - (crop_padding / 2),
             ),
-            min(
+            height=min(
                 bbox.height + crop_padding,
                 1 - (crop_padding / 2),
             ),
         )
-        return cropped_image
     return image
 
 
@@ -233,20 +221,23 @@ def download_model_iteration_as_tensorflow(
 
 
 def azure_image_prediction_to_image_classifier_results(
-    azure_imager_prediction: ImagePrediction,
-) -> List[ImageClassifierResultResult]:
-    image_classifier_results = [
-        ImageClassifierResultResult(
+    azure_image_prediction: ImagePrediction,
+) -> List[ImageClassifierResult]:
+    return [
+        ImageClassifierResult(
             tag_name=prediction["tag_name"], probability=prediction["probability"]
         )
-        for prediction in azure_imager_prediction.as_dict()["predictions"]
+        for prediction in azure_image_prediction.as_dict()["predictions"]
     ]
-    return image_classifier_results
 
 
 def api_classification(
-    image, trainer, predictor, project_name, iteration_name
-) -> List[ImageClassifierResultResult]:
+    image: Image,
+    trainer: CustomVisionTrainingClient,
+    predictor: CustomVisionPredictionClient,
+    project_name: str,
+    iteration_name: str
+) -> List[ImageClassifierResult]:
     project_id = get_project_id(trainer, project_name)
 
     results = predictor.classify_image(
@@ -257,11 +248,11 @@ def api_classification(
     return azure_image_prediction_to_image_classifier_results(results)
 
 
-def get_tag_dict(trainer, project_id):
+def get_tag_dict(trainer: CustomVisionTrainingClient, project_id: str):
     return {tag.name: tag.id for tag in trainer.get_tags(project_id)}
 
 
-def get_tag_id(tag_name: str, trainer, project_id) -> str:
+def get_tag_id(tag_name: str, trainer: CustomVisionTrainingClient, project_id: str) -> str:
     tag_dict = get_tag_dict(trainer, project_id)
     try:
         return tag_dict[tag_name]
