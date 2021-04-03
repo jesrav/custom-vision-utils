@@ -230,7 +230,7 @@ class BlobObjectDetectionDataSet(ImageDataSetInterface):
 
     @classmethod
     def _from_flat_config(cls, config: Dict, connection_str: Optional[str] = None):
-        flat_config = BlobObjectDetectionDataSet(**config)
+        flat_config = BlobObjectDetectionDataFlatConfig(**config)
         blob_object_detection_data = BlobObjectDetectionDataSet()
 
         for image in flat_config.images:
