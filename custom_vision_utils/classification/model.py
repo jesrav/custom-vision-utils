@@ -1,4 +1,9 @@
-from typing import List
+"""Wrapper class for a Custom Vision Classification model exported as a tensorflow model.
+
+The code is basically copy pasted from examples in the Custom Vision documentation, with minor tweaks.
+"""
+from pathlib import Path
+from typing import List, Union
 
 import cv2
 import numpy as np
@@ -9,13 +14,19 @@ from custom_vision_utils.classification.result import ImageClassifierResult
 
 
 class ImageClassifierModel:
+    """Wrapper class for a Custom Vision Classification model exported as a tensorflow model"""
     INPUT_TENSOR_NAME = "Placeholder:0"
     OUTPUT_LAYER = "loss:0"
     INPUT_NODE = "Placeholder:0"
 
-    def __init__(self, model_filename, labels_filename):
+    def __init__(self, model_filepath: Union[str, Path], labels_filepath: Union[str, Path]):
+        """Initialize model object
+
+        :param model_filepath: Path to the exported model (extension .pb)
+        :param labels_filepath: Path to the exported model labels (extension .txt)
+        """
         graph_def = tf.compat.v1.GraphDef()
-        with open(model_filename, "rb") as f:
+        with open(model_filepath, "rb") as f:
             graph_def.ParseFromString(f.read())
 
         self.graph = tf.Graph()
@@ -28,11 +39,11 @@ class ImageClassifierModel:
                 self.INPUT_TENSOR_NAME
             ).shape.as_list()[1]
 
-        with open(labels_filename) as f:
+        with open(labels_filepath) as f:
             self.labels = [l.strip() for l in f.readlines()]
 
     @staticmethod
-    def convert_to_opencv(image):
+    def _convert_to_opencv(image):
         # RGB -> BGR conversion is performed as well.
         image = image.convert("RGB")
         r, g, b = np.array(image).T
@@ -40,14 +51,14 @@ class ImageClassifierModel:
         return opencv_image
 
     @staticmethod
-    def crop_center(img, cropx, cropy):
+    def _crop_center(img, cropx, cropy):
         h, w = img.shape[:2]
         startx = w // 2 - (cropx // 2)
         starty = h // 2 - (cropy // 2)
         return img[starty : starty + cropy, startx : startx + cropx]
 
     @staticmethod
-    def resize_down_to_1600_max_dim(image):
+    def _resize_down_to_1600_max_dim(image):
         h, w = image.shape[:2]
         if h < 1600 and w < 1600:
             return image
@@ -56,12 +67,12 @@ class ImageClassifierModel:
         return cv2.resize(image, new_size, interpolation=cv2.INTER_LINEAR)
 
     @staticmethod
-    def resize_to_256_square(image):
+    def _resize_to_256_square(image):
         h, w = image.shape[:2]
         return cv2.resize(image, (256, 256), interpolation=cv2.INTER_LINEAR)
 
     @staticmethod
-    def update_orientation(image):
+    def _update_orientation(image):
         exif_orientation_tag = 0x0112
         if hasattr(image, "_getexif"):
             exif = image._getexif()
@@ -88,14 +99,18 @@ class ImageClassifierModel:
         return image
 
     def predict_image(self, image: Image) -> List[ImageClassifierResult]:
+        """Do prediction for an image.
 
-        image = self.convert_to_opencv(image)
-        image = self.resize_down_to_1600_max_dim(image)
+        :param image: Pillow image
+        :return: List of predictions
+        """
+        image = self._convert_to_opencv(image)
+        image = self._resize_down_to_1600_max_dim(image)
         h, w = image.shape[:2]
         min_dim = min(w, h)
-        max_square_image = self.crop_center(image, min_dim, min_dim)
-        augmented_image = self.resize_to_256_square(max_square_image)
-        augmented_image = self.crop_center(
+        max_square_image = self._crop_center(image, min_dim, min_dim)
+        augmented_image = self._resize_to_256_square(max_square_image)
+        augmented_image = self._crop_center(
             augmented_image, self.input_shape, self.input_shape
         )
 
