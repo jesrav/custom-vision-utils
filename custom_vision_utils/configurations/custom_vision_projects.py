@@ -30,6 +30,7 @@ ALLOWED_TAG_TYPES = ["Regular", "Negative", "GeneralProduct"]
 
 
 class Tag(BaseModel):
+    """Class representing a Custum Vision tag."""
     name: str
     type: str
 
@@ -41,6 +42,7 @@ class Tag(BaseModel):
 
 
 class CustomVisionProject(BaseModel):
+    """Class representing a Custum Vision Project."""
     project_name: str
     domain_type: str
     domain_name: str

@@ -1,4 +1,10 @@
+"""Wrapper class for a Custom Vision Classification model exported as a tensorflow model.
+
+The code is basically copy pasted from examples in the Custom Vision documentation, with minor tweaks.
+"""
 import math
+from pathlib import Path
+from typing import Union, List
 
 import numpy as np
 import tensorflow as tf
@@ -11,7 +17,7 @@ from custom_vision_utils.object_detection.result import (
 
 
 class ObjectDetectionModel(object):
-    """Class for Custom Vision's exported object detection model"""
+    """Wrapper class for a Custom Vision object detection model exported as a tensorflow model"""
 
     ANCHORS = np.array(
         [[0.573, 0.677], [1.87, 2.06], [3.34, 5.47], [7.88, 3.53], [9.77, 9.17]]
@@ -20,23 +26,26 @@ class ObjectDetectionModel(object):
     DEFAULT_INPUT_SIZE = 512 * 512
 
     def __init__(
-        self, model_filename, labels_filename, prob_threshold=0.10, max_detections=20
+        self,
+        model_filepath: Union[str, Path],
+        labels_filepath: Union[str, Path],
+        prob_threshold: float = 0.10,
+        max_detections: int = 20,
     ):
-        """Initialize the class
+        """Initialize model object
 
-        Args:
-            model_filename: File with persisterd model
-            label_filename: File with label names
-            prob_threshold (float): threshold for class probability.
-            max_detections (int): the max number of output custom_vision_results.
+        :param model_filepath: Path to the exported model (extension .pb)
+        :param labels_filepath: Path to the exported model labels (extension .txt)
+        :param prob_threshold: threshold for class probability.
+        :param max_detections: the max number of output custom_vision_results.
         """
         # Load graph
         graph_def = tf.compat.v1.GraphDef()
-        with tf.compat.v2.io.gfile.GFile(model_filename, "rb") as f:
+        with tf.compat.v2.io.gfile.GFile(model_filepath, "rb") as f:
             graph_def.ParseFromString(f.read())
 
         # Load labels
-        with open(labels_filename, "r") as f:
+        with open(labels_filepath, "r") as f:
             labels = [l.strip() for l in f.readlines()]
 
         assert len(labels) >= 1, "At least 1 label is required"
@@ -193,12 +202,7 @@ class ObjectDetectionModel(object):
                     image = image.transpose(Image.FLIP_LEFT_RIGHT)
         return image
 
-    def predict_image(self, image):
-        inputs = self.preprocess(image)
-        prediction_outputs = self.predict(inputs)
-        return self.postprocess(prediction_outputs)
-
-    def preprocess(self, image):
+    def _preprocess(self, image):
         image = image.convert("RGB") if image.mode != "RGB" else image
         image = self._update_orientation(image)
 
@@ -210,7 +214,7 @@ class ObjectDetectionModel(object):
         image = image.resize((new_width, new_height))
         return image
 
-    def predict(self, preprocessed_image):
+    def _predict(self, preprocessed_image):
         inputs = np.array(preprocessed_image, dtype=np.float)[
             :, :, (2, 1, 0)
         ]  # RGB -> BGR
@@ -222,7 +226,7 @@ class ObjectDetectionModel(object):
             )
             return outputs[0]
 
-    def postprocess(self, prediction_outputs):
+    def _postprocess(self, prediction_outputs):
         """Extract bounding boxes from the model outputs.
 
         Args:
@@ -260,3 +264,13 @@ class ObjectDetectionModel(object):
             )
             for i in range(len(selected_boxes))
         ]
+
+    def predict_image(self, image: Image) -> List[ObjectDetectionResult]:
+        """Do prediction for an image.
+
+        :param image: Pillow image
+        :return: List of object detection predictions
+        """
+        inputs = self._preprocess(image)
+        prediction_outputs = self._predict(inputs)
+        return self._postprocess(prediction_outputs)
