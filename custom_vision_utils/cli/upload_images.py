@@ -1,6 +1,7 @@
 import click
 
 from dotenv import load_dotenv, find_dotenv
+from pydantic import ValidationError
 
 from custom_vision_utils.image_dataset.upload_to_custom_vision import (
     upload_to_custom_vision,
@@ -26,12 +27,21 @@ image_data_classes = [
 ]
 
 
+class BadDataConfigurationError(BaseException):
+    pass
+
+
 def get_image_data(image_data_config_path):
     for image_data_class in image_data_classes:
         try:
             return image_data_class.from_config(image_data_config_path)
-        except:
+        except ValidationError:
             pass
+        except TypeError:
+            pass
+    raise BadDataConfigurationError(
+        "The configuration yaml did not match any of the possible image data set configurations."
+    )
 
 
 @click.command()
