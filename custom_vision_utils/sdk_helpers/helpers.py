@@ -232,7 +232,7 @@ def crop_image_based_on_object_detection(
 
 
 def download_model_iteration_as_tensorflow(
-    project_name: str, out_model_folder: Path, iteration: str = None
+    project_name: str, out_model_folder: Path, iteration_id: str = None
 ) -> None:
     """Download model iteration.
 
@@ -240,7 +240,7 @@ def download_model_iteration_as_tensorflow(
 
     :param project_name: Name of Custum Vision project
     :param out_model_folder: Out folder for exported model
-    :param iteration: Name of model iteration
+    :param iteration_name: Name of model iteration
     """
 
     if not out_model_folder.exists():
@@ -248,17 +248,17 @@ def download_model_iteration_as_tensorflow(
 
     trainer = get_trainer()
     project_id = get_project_id(trainer, project_name)
-    if iteration is None:
+    if iteration_id is None:
         iterations = trainer.get_iterations(project_id)
-        iteration = get_latest_iteration(iterations).id
-
+        iteration_id = get_latest_iteration(iterations).id
     try:
         trainer.export_iteration(
             project_id=project_id,
-            iteration_id=iteration,
+            iteration_id=iteration_id,
             platform="TensorFlow",
             flavor="TensorFlowNormal",
         )
+
     # Model already queued for exporting.
     except CustomVisionErrorException:
         pass
@@ -269,7 +269,7 @@ def download_model_iteration_as_tensorflow(
     trainer = get_trainer()
     uri = trainer.get_exports(
         project_id=project_id,
-        iteration_id=iteration,
+        iteration_id=iteration_id,
     )[0].download_uri
 
     r = requests.get(uri, allow_redirects=True)

@@ -22,7 +22,7 @@ def export_model(project_name, outpath, iteration_name):
 
     trainer = get_trainer()
     if iteration_name:
-        iteration_id = get_iteration(trainer, project_name, iteration_name)
+        iteration_id = get_iteration(trainer, project_name, iteration_name).id
     else:
         iteration_id = None
         iteration_name = "latest"
