@@ -7,6 +7,7 @@ setup(
     description="Utilities for working with Azure Custom Vision.",
     author="Jes Ravnbøl",
     author_email="jesravnbol@hotmail.com",
+    license='MIT',
     packages=find_packages(where="."),
     install_requires=[
         "Pillow",
@@ -14,12 +15,15 @@ setup(
         "msrest",
         "azure-storage-blob",
         "azure-storage-file-datalake",
-        "pandas",
+        "opencv-python",
         "imutils",
         "imgaug",
         "tensorflow",
         "pydantic",
         "pyyaml",
+        "python-dotenv",
+        "click",
+        "rich",
     ],
     entry_points={
         "console_scripts": [

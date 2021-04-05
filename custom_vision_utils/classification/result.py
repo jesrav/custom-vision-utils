@@ -2,6 +2,7 @@ from pydantic import BaseModel
 
 
 class ImageClassifierResult(BaseModel):
+    """Class representing the result of a Custum Vision classifier."""
     tag_name: str
     probability: float
 

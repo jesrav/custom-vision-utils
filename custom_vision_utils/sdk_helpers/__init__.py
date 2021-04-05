@@ -8,7 +8,7 @@ from .helpers import (
     get_project_id,
     get_highest_proba_result,
     get_prediction_credentials,
-    get_iteration_id,
+    get_iteration,
     get_latest_iteration,
     get_results_sorted_by_probability,
     crop_image_based_on_object_detection,

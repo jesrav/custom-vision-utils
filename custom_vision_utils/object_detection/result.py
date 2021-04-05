@@ -5,6 +5,7 @@ from pydantic import BaseModel
 
 
 class BoundingBox(BaseModel):
+    """Class representing a bounding box for an image region."""
     left: float
     top: float
     width: float
@@ -20,6 +21,7 @@ class BoundingBox(BaseModel):
 
 
 class Region(BaseModel):
+    """Class representing an object detection image region."""
     bounding_box: BoundingBox
     tag_name: str
 
@@ -34,6 +36,7 @@ class Region(BaseModel):
 
 
 class ObjectDetectionResult(BaseModel):
+    """Class representing the result of a Custum Vision object detection model."""
     tag_name: str
     probability: float
     bounding_box: BoundingBox

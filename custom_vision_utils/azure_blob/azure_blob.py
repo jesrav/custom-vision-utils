@@ -1,3 +1,4 @@
+"""Utilities for working with Azure blob storage."""
 import os
 from typing import Optional, List
 
@@ -5,7 +6,7 @@ from azure.storage.blob import BlobClient, BlobServiceClient
 from azure.storage.blob._models import BlobProperties
 
 
-def set_connection_str_from_env_if_missing(connection_string: str) -> str:
+def set_connection_str_from_env_if_missing(connection_string: Optional[str]) -> str:
     """Set the connection string
 
     If the connection string is missing it is set from the environment variable STORAGE_CONNECTION_STRING.
@@ -23,7 +24,6 @@ def set_connection_str_from_env_if_missing(connection_string: str) -> str:
 def get_blob(
     container_name: str, blob_name: str, connection_string: Optional[str] = None
 ) -> BlobClient:
-    """Get an azure blob client"""
     connection_string = set_connection_str_from_env_if_missing(connection_string)
     return BlobClient.from_connection_string(
         conn_str=connection_string,
@@ -35,6 +35,12 @@ def get_blob(
 def get_blob_service_client(
     connection_string: Optional[str] = None,
 ) -> BlobServiceClient:
+    """Get a blob service client.
+
+    :param connection_string: Connection string for storage account.
+    If none is supplied, it will be loaded from the environment variable STORAGE_CONNECTION_STRING.
+    :return: BlobServiceClient
+    """
     connection_string = set_connection_str_from_env_if_missing(connection_string)
     return BlobServiceClient.from_connection_string(connection_string)
 
@@ -56,6 +62,17 @@ def list_blobs(
     extensions: Optional[List[str]] = None,
     connection_string: Optional[str] = None,
 ) -> List[BlobProperties]:
+    """List blobs in container
+
+    Returned blobs are filtered on name_starts_with and extensions.
+
+    :param container_name: Name of container
+    :param name_starts_with: Only return blobs with names that tart with name_starts_with
+    :param extensions: Only return blobs with names ends with one of the extensions in extensions.
+    :param connection_string: Connection string for storage account.
+    If none is supplied, it will be loaded from the environment variable STORAGE_CONNECTION_STRING.
+    :return: list of blobs
+    """
     blob_service_client = get_blob_service_client(connection_string=connection_string)
     container_client = blob_service_client.get_container_client(container_name)
     blob_properties = container_client.list_blobs(name_starts_with=name_starts_with)
