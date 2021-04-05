@@ -1,7 +1,8 @@
 import os
 import tempfile
-import zipfile
 import time
+import zipfile
+from pathlib import Path
 from typing import List, Union
 
 import requests
@@ -128,10 +129,10 @@ def get_project_id(trainer: CustomVisionTrainingClient, project_name: str) -> st
         return project_ids[0]
 
 
-def get_iteration_id(
+def get_iteration(
     trainer: CustomVisionTrainingClient, project_name: str, iteration_name: str
 ):
-    """Get custom vision model iteration id.
+    """Get custom vision model iteration.
 
     :param trainer: Custom Vision training client
     :param project_name: Name of project
@@ -231,16 +232,15 @@ def crop_image_based_on_object_detection(
 
 
 def download_model_iteration_as_tensorflow(
-    project_name: str, out_model_folder: zipfile.Path, iteration_id: str = None
+    project_name: str, out_model_folder: Path, iteration: str = None
 ) -> None:
     """Download model iteration.
 
     If no iteration_id is passed the latest model iteration is downloaded.
 
-    :param project_name:
-    :param out_model_folder:
-    :param iteration_id:
-    :return:
+    :param project_name: Name of Custum Vision project
+    :param out_model_folder: Out folder for exported model
+    :param iteration: Name of model iteration
     """
 
     if not out_model_folder.exists():
@@ -248,14 +248,14 @@ def download_model_iteration_as_tensorflow(
 
     trainer = get_trainer()
     project_id = get_project_id(trainer, project_name)
-    if iteration_id is None:
+    if iteration is None:
         iterations = trainer.get_iterations(project_id)
-        iteration_id = get_latest_iteration(iterations).id
+        iteration = get_latest_iteration(iterations).id
 
     try:
         trainer.export_iteration(
             project_id=project_id,
-            iteration_id=iteration_id,
+            iteration_id=iteration,
             platform="TensorFlow",
             flavor="TensorFlowNormal",
         )
@@ -269,7 +269,7 @@ def download_model_iteration_as_tensorflow(
     trainer = get_trainer()
     uri = trainer.get_exports(
         project_id=project_id,
-        iteration_id=iteration_id,
+        iteration_id=iteration,
     )[0].download_uri
 
     r = requests.get(uri, allow_redirects=True)

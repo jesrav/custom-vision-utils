@@ -6,7 +6,7 @@ from dotenv import load_dotenv, find_dotenv
 from custom_vision_utils.sdk_helpers import (
     get_trainer,
     download_model_iteration_as_tensorflow,
-    get_iteration_id,
+    get_iteration,
 )
 from custom_vision_utils.cli.logger import logger
 
@@ -22,7 +22,7 @@ def export_model(project_name, outpath, iteration_name):
 
     trainer = get_trainer()
     if iteration_name:
-        iteration_id = get_iteration_id(trainer, project_name, iteration_name)
+        iteration_id = get_iteration(trainer, project_name, iteration_name)
     else:
         iteration_id = None
         iteration_name = "latest"
