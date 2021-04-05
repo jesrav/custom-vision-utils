@@ -1,8 +1,13 @@
-# TODO:
-- Example project
-- Docstrings
-- Readme
+# Utility package for working with Azure Custom Vision
+The package contains a number of utilities for working with [Azure Custom Vision](https://docs.microsoft.com/en-us/azure/cognitive-services/custom-vision-service/).
 
-# IDEAS
-- Easy way to convert between blob and local data sets.
+# Get started
+
+## Requirements
+Python >= 3.6
+
+## Install
+````bash 
+pip install git+https://github.com/jesrav/custom-vision-utils.git
+````
 
