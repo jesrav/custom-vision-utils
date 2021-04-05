@@ -56,47 +56,69 @@ def get_prediction_key_from_env() -> str:
     return prediction_key
 
 
-def get_training_credentials():
+def get_training_credentials() -> ApiKeyCredentials:
     return ApiKeyCredentials(in_headers={"Training-key": get_training_key_from_env()})
 
 
-def get_prediction_credentials():
+def get_prediction_credentials() -> ApiKeyCredentials:
     return ApiKeyCredentials(
         in_headers={"Prediction-key": get_prediction_key_from_env()}
     )
 
 
 def get_trainer() -> CustomVisionTrainingClient:
+    """Get Custom Vision training client."""
     return CustomVisionTrainingClient(
-        get_endpoint_from_env(), get_training_credentials()
+        endpoint=get_endpoint_from_env(),
+        credentials=get_training_credentials()
     )
 
 
 def get_predictor() -> CustomVisionPredictionClient:
+    """Get Custom Vision prediction client."""
     return CustomVisionPredictionClient(
-        get_endpoint_from_env(), get_prediction_credentials()
+        endpoint=get_endpoint_from_env(),
+        credentials=get_prediction_credentials()
     )
 
 
 def get_domain_id(
-    trainer: CustomVisionTrainingClient, name, type="Classification"
+    trainer: CustomVisionTrainingClient, domain_name, domain_type="Classification"
 ) -> str:
+    """Get Custom Vision domain id.
+
+    :param trainer: Custom Vision training client
+    :param domain_name: Name of domain
+    :param domain_type: Type of domain
+    :return: Id of Custom Vision domain
+    """
     domain_id = [
         domain.id
         for domain in trainer.get_domains()
-        if domain.name == name and domain.type == type
+        if domain.name == domain_name and domain.type == domain_type
     ][0]
     if len(domain_id) == 0:
-        raise KeyError(f"No domain with name {name}")
+        raise KeyError(f"No domain with name {domain_name}")
     else:
         return domain_id
 
 
 def get_project_names(trainer: CustomVisionTrainingClient) -> List[str]:
+    """Get Custom Vision project names
+
+    :param trainer: Custom Vision training client
+    :return: List of Custom Vision project names
+    """
     return [p.name for p in trainer.get_projects()]
 
 
 def get_project_id(trainer: CustomVisionTrainingClient, project_name: str) -> str:
+    """Get Custom Vision project id
+
+    :param trainer: Custom Vision training client
+    :param project_name: Name of project
+    :return: Custom Vision project id
+    """
     project_ids = [
         project.id for project in trainer.get_projects() if project.name == project_name
     ]
@@ -109,14 +131,21 @@ def get_project_id(trainer: CustomVisionTrainingClient, project_name: str) -> st
 def get_iteration_id(
     trainer: CustomVisionTrainingClient, project_name: str, iteration_name: str
 ):
+    """Get custom vision model iteration id.
+
+    :param trainer: Custom Vision training client
+    :param project_name: Name of project
+    :param iteration_name: Name of iteration
+    :return:
+    """
     project_id = get_project_id(trainer, project_name)
     iterations = trainer.get_iterations(project_id)
     try:
-        return [iter for iter in iterations if iter.name == iteration_name][0]
+        return [iteration for iteration in iterations if iteration.name == iteration_name][0]
     except IndexError:
         raise ValueError(
             f"No iteration called {iteration_name}, "
-            f"iterations available: {[iter.name for iter in iterations]}"
+            f"iterations available: {[iteration.name for iteration in iterations]}"
         )
 
 
@@ -132,18 +161,37 @@ def get_highest_proba_result(image_results: ImageResults) -> ImageResult:
     return get_results_sorted_by_probability(image_results)[0]
 
 
-def get_predicted_tags(
-    image_classifier_results: List[ImageClassifierResult], prob_thr=0.5
-) -> List[str]:
-    return [
-        pred.tag_name
-        for pred in image_classifier_results
-        if pred.probability > prob_thr
-    ]
-
-
 def get_predicted_tag(image_classifier_results: List[ImageClassifierResult]) -> str:
     return get_highest_proba_result(image_classifier_results).tag_name
+
+
+def get_tag_dict(trainer: CustomVisionTrainingClient, project_id: str):
+    """Get dictionary mapping tag nane to tag id for a Custom Vision project.
+
+    :param trainer: Custom Vision training client
+    :param project_id: Project id
+    :return: Dictionary mapping tag nane to tag id
+    """
+    return {tag.name: tag.id for tag in trainer.get_tags(project_id)}
+
+
+def get_tag_id(
+        tag_name: str, trainer: CustomVisionTrainingClient, project_id: str
+) -> str:
+    """Get tag id for Custum Vision project
+
+    :param tag_name: Tag Name
+    :param trainer: Custom Vision training client
+    :param project_id: Project id
+    :return: Tag id
+    """
+    tag_dict = get_tag_dict(trainer, project_id)
+    try:
+        return tag_dict[tag_name]
+    except KeyError:
+        raise KeyError(
+            f"Tag `{tag_name}` not part of project tags. Allowed values are: {tag_dict.keys()}"
+        )
 
 
 def crop_image_based_on_object_detection(
@@ -235,6 +283,11 @@ def download_model_iteration_as_tensorflow(
 def azure_image_prediction_to_image_classifier_results(
     azure_image_prediction: ImagePrediction,
 ) -> List[ImageClassifierResult]:
+    """Get ImageClassifierResult from Azure Custum Vision prediction
+
+    :param azure_image_prediction: Azure Custum Vision image prediction object.
+    :return: ImageClassifierResult
+    """
     return [
         ImageClassifierResult(
             tag_name=prediction["tag_name"], probability=prediction["probability"]
@@ -250,6 +303,15 @@ def api_classification(
     project_name: str,
     iteration_name: str,
 ) -> List[ImageClassifierResult]:
+    """Predict image class/classes using Custum Vision API.
+
+    :param image: Pillow image
+    :param trainer: Custom Vision training client
+    :param predictor: Custom Vision prediction client
+    :param project_name: Name of custum vision project
+    :param iteration_name: Name of model iteration
+    :return: List of image classification results
+    """
     project_id = get_project_id(trainer, project_name)
 
     results = predictor.classify_image(
@@ -258,22 +320,6 @@ def api_classification(
         image_data=pil_image_to_byte_array(image),
     )
     return azure_image_prediction_to_image_classifier_results(results)
-
-
-def get_tag_dict(trainer: CustomVisionTrainingClient, project_id: str):
-    return {tag.name: tag.id for tag in trainer.get_tags(project_id)}
-
-
-def get_tag_id(
-    tag_name: str, trainer: CustomVisionTrainingClient, project_id: str
-) -> str:
-    tag_dict = get_tag_dict(trainer, project_id)
-    try:
-        return tag_dict[tag_name]
-    except KeyError:
-        raise KeyError(
-            f"Tag `{tag_name}` not part of project tags. Allowed values are: {tag_dict.keys()}"
-        )
 
 
 def download_custom_vision_image(custom_vision_image, file_handler) -> None:
