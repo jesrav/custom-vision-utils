@@ -10,3 +10,6 @@ imgaug
 tensorflow
 pydantic
 pyyaml
+dotenv
+click
+rich
