@@ -36,8 +36,6 @@ STORAGE_CONNECTION_STRING=
 ````
 
 # Example usage
-The examples below will use images stored locally, but you could instead use Azure blob storage, 
-as long as the [right environment variable are set](#Required-environment-variables).
 
 ## Creating Custom Vision projects
 Define your projects in yaml.
@@ -69,7 +67,6 @@ Create the projects in your Azure Custom Vision resource using the cli
 ```
 
 ## Defining a classification dataset in yaml
-This shows how to define a classification data set, but you can correspondingly define object detection data sets. 
 
 ### Classification data sets
 ```yaml
