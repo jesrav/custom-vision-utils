@@ -70,42 +70,113 @@ Create the projects in your Azure Custom Vision resource using the cli
 
 ## Defining a classification dataset in yaml
 This shows how to define a classification data set, but you can correspondingly define object detection data sets. 
+
+### Classification data sets
 ```yaml
 # Local classification data set
 images:
 - tag_names:
-  - positive
+  - flower1
+  - flower2
   uri: data/images/image1.jpg
   name: image1
 - tag_names:
-  - negative
+  - flower1
   uri: data/images/image2.jpg
   name: image2
-- tag_names:
-  - positive
-  uri: data/images/image3.jpg
-  name: image3
 ```
 ```yaml
 # Blob storage classification data set
 images:
 - tag_names:
-  - positive
+  - flower1
+  - flower2
   uri: data/images/image1.jpg
   name: image1
   container_name: my-container
 - tag_names:
-  - negative
+  - flower1
   uri: data/images/image2.jpg
   name: image2
   container_name: my-container
-- tag_names:
-  - positive
-  uri: data/images/image3.jpg
-  name: image3
-  container_name: my-container
 ```
-
+```yaml
+# Local classification data set, where separate tags are stored in separate directories  
+image_dirs:
+  - path_dir: data/train/positive
+    tag_names:
+    - positive
+  - path_dir: data/train/negative
+    tag_names:
+      - negative
+```
+```yaml
+# Blob classification data set, where separate tags are stored in separate directories 
+image_dirs:
+  - container_name: my-container
+    path_dir: data/train/positive
+    tag_names:
+    - positive
+  - container_name: my-container 
+    path_dir: data/train/negative
+    tag_names:
+      - negative
+```
+### Object detection data sets
+```yaml
+# Local object detection data set
+images:
+  - uri: data/images/image1.jpg
+    regions:
+      - bounding_box:
+          left: 0.2
+          top: 0.1
+          width: 0.5
+          height: 0.3
+        tag_name: object_tag1
+      - bounding_box:
+          left: 0.5
+          top: 0.1
+          width: 0.1
+          height: 0.1
+        tag_name: object_tag2
+  - uri: data/images/image2.jpg
+    regions:
+      - bounding_box:
+          left: 0.2
+          top: 0.2
+          width: 0.2
+          height: 0.50
+        tag_name: object_tag2
+```
+```yaml
+# Blob storage object detection data set
+images:
+  - uri: data/images/image1.jpg
+    container_name: my-container
+    regions:
+      - bounding_box:
+          left: 0.2
+          top: 0.1
+          width: 0.5
+          height: 0.3
+        tag_name: object_tag1
+      - bounding_box:
+          left: 0.5
+          top: 0.1
+          width: 0.1
+          height: 0.1
+        tag_name: object_tag2
+  - uri: data/images/image2.jpg
+    container_name: my-container
+    regions:
+      - bounding_box:
+          left: 0.2
+          top: 0.2
+          width: 0.2
+          height: 0.50
+        tag_name: object_tag2
+```
 ## Uploading images and tags to a Custom Vision project
 To upload a classification or object detection data sets defined in a yaml config, you can use the cli. 
 ```bash
