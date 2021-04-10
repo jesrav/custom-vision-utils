@@ -1,5 +1,6 @@
 # Utility package for working with Azure Custom Vision
 The package contains a number of utilities for working with [Azure Custom Vision](https://docs.microsoft.com/en-us/azure/cognitive-services/custom-vision-service/).
+It wraps the Custom Vision Python SDK and add extra functionality.
 
 **The main benefits are:**
 - Specify your Custom Vision projects in a yaml configuration file.
@@ -35,7 +36,7 @@ STORAGE_CONNECTION_STRING=
 ````
 
 # Example usage
-The examples below will use images stores locally, but you could equally use Azure blob storage, 
+The examples below will use images stored locally, but you could instead use Azure blob storage, 
 as long as the [right environment variable are set](#Required-environment-variables).
 
 ## Creating Custom Vision projects
@@ -62,7 +63,7 @@ projects:
       - name: "region"
         type: "Regular"
 ````
-Create the projects in your Custom Vision project using the cli
+Create the projects in your Azure Custom Vision resource using the cli
 ```bash
     cvis create-projects <path-to-yaml-config-file>
 ```
@@ -70,7 +71,7 @@ Create the projects in your Custom Vision project using the cli
 ## Defining a classification dataset in yaml
 This shows how to define a classification data set, but you can correspondingly define object detection data sets. 
 ```yaml
-# Local data set
+# Local classification data set
 images:
 - tag_names:
   - positive
@@ -86,7 +87,7 @@ images:
   name: image3
 ```
 ```yaml
-# Blob storage data set
+# Blob storage classification data set
 images:
 - tag_names:
   - positive
@@ -106,6 +107,7 @@ images:
 ```
 
 ## Uploading images and tags to a Custom Vision project
+To upload a classification or object detection data sets defined in a yaml config, you can use the cli. 
 ```bash
     cvis upload-images <project-name> <path-to-yaml-config-file>
 ```
