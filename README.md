@@ -36,7 +36,7 @@ STORAGE_CONNECTION_STRING=
 
 # Example usage
 The examples below will use images stores locally, but you could equally use Azure blob storage, 
-as long as the [right environment variable are set](##Required-environment-variables).
+as long as the [right environment variable are set](#Required-environment-variables).
 
 ## Creating Custom Vision projects
 Define your projects in yaml.
