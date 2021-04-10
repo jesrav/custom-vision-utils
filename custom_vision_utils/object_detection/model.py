@@ -176,9 +176,9 @@ class ObjectDetectionModel(object):
         pillow_utils: input PIL pillow_utils
         returns corrected PIL pillow_utils
         """
-        exif_orientation_tag = 0x0112
         if hasattr(image, "_getexif"):
             exif = image._getexif()
+            exif_orientation_tag = 0x0112
             if exif != None and exif_orientation_tag in exif:
                 orientation = exif.get(exif_orientation_tag, 1)
                 print("Image has EXIF Orientation: {}".format(str(orientation)))
@@ -186,19 +186,9 @@ class ObjectDetectionModel(object):
                 orientation -= 1
                 if orientation >= 4:
                     image = image.transpose(Image.TRANSPOSE)
-                if (
-                    orientation == 2
-                    or orientation == 3
-                    or orientation == 6
-                    or orientation == 7
-                ):
+                if orientation in [2, 3, 6, 7]:
                     image = image.transpose(Image.FLIP_TOP_BOTTOM)
-                if (
-                    orientation == 1
-                    or orientation == 2
-                    or orientation == 5
-                    or orientation == 6
-                ):
+                if orientation in [1, 2, 5, 6]:
                     image = image.transpose(Image.FLIP_LEFT_RIGHT)
         return image
 
