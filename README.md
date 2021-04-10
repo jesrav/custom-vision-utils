@@ -48,9 +48,9 @@ projects:
     classification_type: "Multiclass"
     publish_name: "my-classifier-model"
     tags:
-      - name: "dunk"
+      - name: "flower1"
         type: "Regular"
-      - name: "layup"
+      - name: "flower2"
         type: "Regular"
 
   - project_name: "my-object-detection-project"
