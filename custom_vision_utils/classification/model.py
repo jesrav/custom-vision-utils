@@ -47,8 +47,7 @@ class ImageClassifierModel:
         # RGB -> BGR conversion is performed as well.
         image = image.convert("RGB")
         r, g, b = np.array(image).T
-        opencv_image = np.array([b, g, r]).transpose()
-        return opencv_image
+        return np.array([b, g, r]).transpose()
 
     @staticmethod
     def _crop_center(img, cropx, cropy):
@@ -73,28 +72,18 @@ class ImageClassifierModel:
 
     @staticmethod
     def _update_orientation(image):
-        exif_orientation_tag = 0x0112
         if hasattr(image, "_getexif"):
             exif = image._getexif()
+            exif_orientation_tag = 0x0112
             if exif != None and exif_orientation_tag in exif:
                 orientation = exif.get(exif_orientation_tag, 1)
                 # orientation is 1 based, shift to zero based and flip/transpose based on 0-based values
                 orientation -= 1
                 if orientation >= 4:
                     image = image.transpose(Image.TRANSPOSE)
-                if (
-                    orientation == 2
-                    or orientation == 3
-                    or orientation == 6
-                    or orientation == 7
-                ):
+                if orientation in [2, 3, 6, 7]:
                     image = image.transpose(Image.FLIP_TOP_BOTTOM)
-                if (
-                    orientation == 1
-                    or orientation == 2
-                    or orientation == 5
-                    or orientation == 6
-                ):
+                if orientation in [1, 2, 5, 6]:
                     image = image.transpose(Image.FLIP_LEFT_RIGHT)
         return image
 
