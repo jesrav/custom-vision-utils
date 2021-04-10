@@ -124,6 +124,7 @@ image_dirs:
 # Local object detection data set
 images:
   - uri: data/images/image1.jpg
+    name: name1
     regions:
       - bounding_box:
           left: 0.2
@@ -138,6 +139,7 @@ images:
           height: 0.1
         tag_name: object_tag2
   - uri: data/images/image2.jpg
+    name: name2
     regions:
       - bounding_box:
           left: 0.2
@@ -174,18 +176,20 @@ images:
           height: 0.50
         tag_name: object_tag2
 ```
+When an image name is not supplied in a data set configuration, the name of the image will be the file name without the extension: `/data/my_image.jpg -> my_image`
+
 ## Uploading images and tags to a Custom Vision project
-To upload a classification or object detection data sets defined in a yaml config, you can use the cli. 
+To upload a classification or object detection data set defined in a yaml config, you can use the cli. 
 ```bash
     cvis upload-images <project-name> <path-to-yaml-config-file>
 ```
-## Working with the data sets in python code
-You can load the image data set in your Python code
+## Working with data sets in python code
+You can load an image data set in your Python code
 ```Python
 from custom_vision_utils.image_dataset import LocalClassifierDataSet
 local_classifier_data_set = LocalClassifierDataSet.from_config("<path-to-yaml-config-file>")
 ```
-## Example of processing the images and creating a new classification data set.
+## Example of processing images and creating a new classification data set.
 ```Python
 from pathlib import Path
 from custom_vision_utils.image import LocalClassifierImage
@@ -211,7 +215,7 @@ for image in local_classifier_data_set:
 processed_classifier_data_set.write_config("<processed-config-path>")
 ```
 
-## Exporting images and tags from a Custom Vision project
+## Exporting images and tags/regions from a Custom Vision project
 ```bash
 cvis export-images <project-name> <directory> --data-config-outpath <outpath-for-yaml-config-file>
 ```
