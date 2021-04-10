@@ -41,9 +41,9 @@ class LocalImage(ImageInterface):
     def from_azure_custom_vision_image(
         custom_vision_image,
         folder: Union[Path, str],
-        container=None,
+        container_name=None,
     ) -> "LocalImage":
-        _ = container
+        _ = container_name
         folder = Path(folder)
 
         if custom_vision_image.metadata and "name" in custom_vision_image.metadata:
@@ -88,9 +88,9 @@ class LocalClassifierImage(ImageInterface):
     def from_azure_custom_vision_image(
         custom_vision_image,
         folder: Union[Path, str],
-        container=None,
+        container_name=None,
     ) -> "LocalClassifierImage":
-        _ = container
+        _ = container_name
         folder = Path(folder)
 
         if custom_vision_image.metadata and "name" in custom_vision_image.metadata:
@@ -139,9 +139,9 @@ class LocalObjectDetectionImage(ImageInterface):
     def from_azure_custom_vision_image(
         custom_vision_image,
         folder: Union[Path, str],
-        container=None,
+        container_name=None,
     ) -> "LocalObjectDetectionImage":
-        _ = container
+        _ = container_name
         folder = Path(folder)
 
         if custom_vision_image.metadata and "name" in custom_vision_image.metadata:
