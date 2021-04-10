@@ -219,5 +219,5 @@ processed_classifier_data_set.write_config("<processed-config-path>")
 cvis export-images <project-name> <directory> --data-config-outpath <outpath-for-yaml-config-file>
 ```
 If you uploaded the images using the cvis command line tool, the exported images will have the same names.
-This is note the case if you just use the Azure Custom Vision SDK. Keeping the names allows you to use Custom Vision to do tagging or validating  
-of classes or regions and linking the exporting tags/regions back to the original images.
+This is not the case if you just use the Azure Custom Vision SDK. 
+Keeping the names allows you to use Custom Vision to do tagging or validating of classes or regions and linking the exporting tags/regions back to the original images.
