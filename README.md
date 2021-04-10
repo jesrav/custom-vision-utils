@@ -111,11 +111,11 @@ image_dirs:
 # Blob classification data set, where separate tags are stored in separate directories 
 image_dirs:
   - container_name: my-container
-    path_dir: data/train/positive
+    blob_dir: data/train/positive
     tag_names:
     - positive
   - container_name: my-container 
-    path_dir: data/train/negative
+    blob_dir: data/train/negative
     tag_names:
       - negative
 ```
