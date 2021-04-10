@@ -35,9 +35,11 @@ STORAGE_CONNECTION_STRING=
 ````
 
 # Example usage
+The examples below will use images stores locally, but you could equally use Azure blob storage, 
+as long as the [right environment variable are set](##Required-environment-variables).
 
 ## Creating Custom Vision projects
-Define your projects in yaml and create the projects
+Define your projects in yaml.
 ````yaml
 projects:
 
@@ -60,25 +62,28 @@ projects:
       - name: "region"
         type: "Regular"
 ````
-Create the projects using the cli
+Create the projects in your Custom Vision project using the cli
 ```bash
     cvis create-projects <path-to-yaml-config-file>
 ```
 
-## Working with classification data
-Define a classification dataset in yaml
+## Defining a classification dataset in yaml
+This shows how to define a classification data set, but you can correspondingly define object detection data sets. 
 ```yaml
 # Local data set
 images:
 - tag_names:
   - positive
   uri: data/images/image1.jpg
+  name: image1
 - tag_names:
   - negative
   uri: data/images/image2.jpg
+  name: image2
 - tag_names:
   - positive
   uri: data/images/image3.jpg
+  name: image3
 ```
 ```yaml
 # Blob storage data set
@@ -86,22 +91,60 @@ images:
 - tag_names:
   - positive
   uri: data/images/image1.jpg
+  name: image1
   container_name: my-container
 - tag_names:
   - negative
   uri: data/images/image2.jpg
+  name: image2
   container_name: my-container
 - tag_names:
   - positive
   uri: data/images/image3.jpg
+  name: image3
   container_name: my-container
 ```
-Upload the images and tags to a Custom Vision project
+
+## Uploading images and tags to a Custom Vision project
 ```bash
     cvis upload-images <project-name> <path-to-yaml-config-file>
 ```
-Load the image data set in your Python code
+## Working with the data sets in python code
+You can load the image data set in your Python code
 ```Python
 from custom_vision_utils.image_dataset import LocalClassifierDataSet
 local_classifier_data_set = LocalClassifierDataSet.from_config("<path-to-yaml-config-file>")
 ```
+## Example of processing the images and creating a new classification data set.
+```Python
+from pathlib import Path
+from custom_vision_utils.image import LocalClassifierImage
+from custom_vision_utils.image_dataset import LocalClassifierDataSet
+
+LOCAL_PROCESSED_IMAGE_FOLDER = "<directory-path>"
+
+# Initialize a new classifier dataset 
+processed_classifier_data_set = LocalClassifierDataSet() 
+
+# Loop over the classification images to do some proccessing. 
+for image in local_classifier_data_set:
+    proccesed_pillow_image = do_stuff_to_image(image.get_pil_image())
+    processed__local_classification_image = LocalClassifierImage.from_pil_image(
+        image=proccesed_pillow_image,
+        uri=Path(LOCAL_PROCESSED_IMAGE_FOLDER) / Path(image.name + "_processed.jpg"),
+        tag_names=image.tag_names,
+        name=image.name,
+    )
+    processed_classifier_data_set.append(processed__local_classification_image)
+
+# Write config for new local processed data set to yaml file
+processed_classifier_data_set.write_config("<processed-config-path>")
+```
+
+## Exporting images and tags from a Custom Vision project
+```bash
+cvis export-images <project-name> <directory> --data-config-outpath <outpath-for-yaml-config-file>
+```
+If you uploaded the images using the cvis command line tool, the exported images will have the same names.
+This is note the case if you just use the Azure Custom Vision SDK. Keeping the names allows you to use Custom Vision to do tagging or validating  
+of classes or regions and linking the exporting tags/regions back to the original images.
