@@ -17,10 +17,14 @@ def train_project(trainer, project_id):
 
 @click.command()
 @click.argument("project_name", type=str)
-def train(project_name):
+@click.option(
+    "--env-file",
+    type=click.Path(exists=True),
+)
+def train(project_name, env_file):
 
-    # Loading environment variables from .env file
-    load_dotenv(find_dotenv())
+    if env_file:
+        load_dotenv(dotenv_path=env_file)
 
     trainer = get_trainer()
     project_id = get_project_id(trainer, project_name)

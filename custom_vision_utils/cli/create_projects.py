@@ -2,7 +2,7 @@ from pathlib import Path
 from typing import List
 
 import click
-from dotenv import load_dotenv, find_dotenv
+from dotenv import load_dotenv
 
 from custom_vision_utils.sdk_helpers import (
     get_trainer,
@@ -57,12 +57,16 @@ def create_tags(project_id: str, tags: List[Tag]):
     "projects-config-path",
     type=click.Path(exists=True),
 )
-def create_projects(projects_config_path):
+@click.option(
+    "--env-file",
+    type=click.Path(exists=True),
+)
+def create_projects(projects_config_path, env_file):
+
+    if env_file:
+        load_dotenv(dotenv_path=env_file)
 
     projects_config_path = Path(projects_config_path)
-
-    # Loading environment variables from .env file
-    load_dotenv(find_dotenv())
 
     if Path(projects_config_path).suffix != ".yaml":
         raise ValueError("File extension of `projects-config-path` must be `.yaml`.")

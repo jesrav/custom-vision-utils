@@ -3,7 +3,7 @@ from typing import Union, Type
 
 import click
 from rich.progress import track
-from dotenv import load_dotenv, find_dotenv
+from dotenv import load_dotenv
 
 from custom_vision_utils.cli.logger import logger
 from custom_vision_utils.sdk_helpers import get_trainer, get_project_id
@@ -23,8 +23,6 @@ from custom_vision_utils.image_dataset import (
     BlobClassifierDataSet,
     BlobObjectDetectionDataSet,
 )
-
-load_dotenv((find_dotenv()))
 
 SUPPORTED_DOMAIN_TYPES = ["Classification", "ObjectDetection", None]
 
@@ -151,9 +149,17 @@ def get_image_data_from_custom_vision(
     is_flag=True,
     default=False,
 )
+@click.option(
+    "--env-file",
+    type=click.Path(exists=True),
+)
 def export_images(
-    project_name, image_outdir, container_name, data_config_outpath, untagged
+    project_name, image_outdir, container_name, data_config_outpath, untagged, env_file
 ) -> None:
+
+    if env_file:
+        load_dotenv(dotenv_path=env_file)
+
     image_data = get_image_data_from_custom_vision(
         project_name=project_name,
         image_outdir=image_outdir,

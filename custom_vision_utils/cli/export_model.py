@@ -1,7 +1,7 @@
 from pathlib import Path
 
 import click
-from dotenv import load_dotenv, find_dotenv
+from dotenv import load_dotenv
 
 from custom_vision_utils.sdk_helpers import (
     get_trainer,
@@ -15,10 +15,14 @@ from custom_vision_utils.cli.logger import logger
 @click.argument("project_name", type=str)
 @click.argument("outpath", type=str)
 @click.option("--iteration_name", type=str)
-def export_model(project_name, outpath, iteration_name):
+@click.option(
+    "--env-file",
+    type=click.Path(exists=True),
+)
+def export_model(project_name, outpath, iteration_name, env_file):
 
-    # Loading environment variables from .env file
-    load_dotenv(find_dotenv())
+    if env_file:
+        load_dotenv(dotenv_path=env_file)
 
     trainer = get_trainer()
     if iteration_name:

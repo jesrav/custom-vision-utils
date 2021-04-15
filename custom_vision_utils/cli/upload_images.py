@@ -1,6 +1,6 @@
 import click
 
-from dotenv import load_dotenv, find_dotenv
+from dotenv import load_dotenv
 from pydantic import ValidationError
 
 from custom_vision_utils.image_dataset.upload_to_custom_vision import (
@@ -47,10 +47,14 @@ def get_image_data(image_data_config_path):
 @click.command()
 @click.argument("project-name", type=str)
 @click.argument("image-data-config-path", type=click.Path())
-def upload_images(project_name, image_data_config_path):
+@click.option(
+    "--env-file",
+    type=click.Path(exists=True),
+)
+def upload_images(project_name, image_data_config_path, env_file):
 
-    # Loading environment variables from .env file
-    load_dotenv(find_dotenv())
+    if env_file:
+        load_dotenv(dotenv_path=env_file)
 
     image_data = get_image_data(image_data_config_path)
     trainer = get_trainer()
