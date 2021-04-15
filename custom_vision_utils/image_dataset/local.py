@@ -54,8 +54,7 @@ class LocalImageDataSet(ImageDataSetInterface):
         flat_config = LocalImageDataFlatConfig(**config)
         local_classifier_data = LocalImageDataSet()
         for image in flat_config.images:
-            uri = image.uri
-            local_classifier_data.append(LocalImage(uri=uri))
+            local_classifier_data.append(LocalImage(uri=image.uri, name=image.name))
         return local_classifier_data
 
     @classmethod
@@ -80,7 +79,7 @@ class LocalImageDataSet(ImageDataSetInterface):
 
     def get_config(self) -> LocalImageDataFlatConfig:
         return LocalImageDataFlatConfig(
-            images=[LocalImageConfig(uri=image.uri) for image in self]
+            images=[LocalImageConfig(uri=image.uri, name=image.name) for image in self]
         )
 
 
@@ -120,12 +119,11 @@ class LocalClassifierDataSet(ImageDataSetInterface):
         flat_config = LocalClassifierDataFlatConfig(**config)
         local_classifier_data = LocalClassifierDataSet()
         for image in flat_config.images:
-            uri = image.uri
-            tag_names = image.tag_names
             local_classifier_data.append(
                 LocalClassifierImage(
-                    uri=uri,
-                    tag_names=tag_names,
+                    uri=image.uri,
+                    tag_names=image.tag_names,
+                    name=image.name
                 )
             )
         return local_classifier_data
@@ -156,7 +154,7 @@ class LocalClassifierDataSet(ImageDataSetInterface):
     def get_config(self) -> LocalClassifierDataFlatConfig:
         return LocalClassifierDataFlatConfig(
             images=[
-                LocalClassifierImageConfig(uri=image.uri, tag_names=image.tag_names)
+                LocalClassifierImageConfig(uri=image.uri, tag_names=image.tag_names, name=image.name)
                 for image in self
             ]
         )
@@ -198,12 +196,11 @@ class LocalObjectDetectionDataSet(ImageDataSetInterface):
         flat_config = LocalObjectDetectionDataFlatConfig(**config)
         local_object_detection_data = LocalObjectDetectionDataSet()
         for image in flat_config.images:
-            uri = image.uri
-            regions = image.regions
             local_object_detection_data.append(
                 LocalObjectDetectionImage(
-                    uri=uri,
-                    regions=regions,
+                    uri=image.uri,
+                    regions=image.regions,
+                    name=image.name
                 )
             )
         return local_object_detection_data
@@ -217,7 +214,7 @@ class LocalObjectDetectionDataSet(ImageDataSetInterface):
     def get_config(self) -> LocalObjectDetectionDataFlatConfig:
         return LocalObjectDetectionDataFlatConfig(
             images=[
-                LocalObjectDetectionImageConfig(uri=image.uri, regions=image.regions)
+                LocalObjectDetectionImageConfig(uri=image.uri, regions=image.regions, name=image.name)
                 for image in self
             ]
         )

@@ -1,5 +1,5 @@
 """Configuration classes for image data sets stored locally."""
-from typing import List
+from typing import List, Optional
 
 from pydantic import BaseModel, DirectoryPath, FilePath
 
@@ -15,7 +15,7 @@ class LocalImageConfig(BaseModel):
     """Class representing a single image in local storage."""
 
     uri: FilePath
-
+    name: Optional[str]
 
 class LocalImageDataFlatConfig(BaseModel):
     """Class representing a list of images in local storage.

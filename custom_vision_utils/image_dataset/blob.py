@@ -75,12 +75,11 @@ class BlobImageDataSet(ImageDataSetInterface):
         blob_image_data = BlobImageDataSet()
 
         for image in flat_config.images:
-            uri = image.uri
-            container_name = image.container_name
             blob_image_data.append(
                 BlobImage(
-                    uri=uri,
-                    container_name=container_name,
+                    uri=image.uri,
+                    container_name=image.container_name,
+                    name=image.name,
                     connection_str=connection_str,
                 )
             )
@@ -98,7 +97,7 @@ class BlobImageDataSet(ImageDataSetInterface):
     def get_config(self) -> BlobImageDataFlatConfig:
         return BlobImageDataFlatConfig(
             images=[
-                BlobImageConfig(uri=image.uri, container_name=image.container_name)
+                BlobImageConfig(uri=image.uri, container_name=image.container_name, name=image.name)
                 for image in self
             ],
         )
@@ -162,14 +161,12 @@ class BlobClassifierDataSet(ImageDataSetInterface):
         blob_classifier_data = BlobClassifierDataSet()
 
         for image in flat_config.images:
-            uri = image.uri
-            tag_names = image.tag_names
-            container_name = image.container_name
             blob_classifier_data.append(
                 BlobClassifierImage(
-                    uri=uri,
-                    tag_names=tag_names,
-                    container_name=container_name,
+                    uri=image.uri,
+                    tag_names=image.tag_names,
+                    container_name=image.container_name,
+                    name=image.name,
                     connection_str=connection_str,
                 )
             )
@@ -191,6 +188,7 @@ class BlobClassifierDataSet(ImageDataSetInterface):
                     uri=image.uri,
                     tag_names=image.tag_names,
                     container_name=image.container_name,
+                    name=image.name,
                 )
                 for image in self
             ],
@@ -234,14 +232,12 @@ class BlobObjectDetectionDataSet(ImageDataSetInterface):
         blob_object_detection_data = BlobObjectDetectionDataSet()
 
         for image in flat_config.images:
-            uri = image.uri
-            regions = image.regions
-            container_name = image.container_name
             blob_object_detection_data.append(
                 BlobObjectDetectionImage(
-                    uri=uri,
-                    regions=regions,
-                    container_name=container_name,
+                    uri=image.uri,
+                    regions=image.regions,
+                    container_name=image.container_name,
+                    name=image.name,
                     connection_str=connection_str,
                 )
             )
@@ -260,6 +256,7 @@ class BlobObjectDetectionDataSet(ImageDataSetInterface):
                     uri=image.uri,
                     container_name=image.container_name,
                     regions=image.regions,
+                    name=image.name,
                 )
                 for image in self
             ]

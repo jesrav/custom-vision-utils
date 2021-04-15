@@ -1,5 +1,5 @@
 """Configuration classes for image data sets stored in Azure blob storage."""
-from typing import List
+from typing import List, Optional
 
 from pydantic import BaseModel
 
@@ -16,6 +16,7 @@ class BlobImageConfig(BaseModel):
 
     uri: str
     container_name: str
+    name: Optional[str]
 
 
 class BlobImageDataFlatConfig(BaseModel):
