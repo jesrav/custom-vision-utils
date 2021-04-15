@@ -21,8 +21,8 @@ pip install git+https://github.com/jesrav/custom-vision-utils.git
 ````
 
 ## Required environment variables
-To use the package the following environment variables needs to be set. 
-The command line tool will automatically look for a .env file and set them from that (See the .env_example file).
+To use the package the following environment variables needs to be set when using the cli. If they are not set, you  
+can pass in a .env file(See the .env_example file).
 ````dotenv
 # Azure Custom Vision environment variables
 ENDPOINT=
@@ -63,7 +63,7 @@ projects:
 ````
 Create the projects in your Azure Custom Vision resource using the cli
 ```bash
-    cvis create-projects <path-to-yaml-config-file>
+    cvis create-projects <path-to-yaml-config-file> --env-file .env
 ```
 
 ## Defining a classification dataset in yaml
@@ -181,7 +181,7 @@ When an image name is not supplied in a data set configuration, the name of the 
 ## Uploading images and tags to a Custom Vision project
 To upload a classification or object detection data set defined in a yaml config, you can use the cli. 
 ```bash
-    cvis upload-images <project-name> <path-to-yaml-config-file>
+    cvis upload-images <project-name> <path-to-yaml-config-file> --env-file .env
 ```
 ## Working with data sets in python code
 You can load an image data set in your Python code
@@ -217,7 +217,7 @@ processed_classifier_data_set.write_config("<processed-config-path>")
 
 ## Exporting images and tags/regions from a Custom Vision project
 ```bash
-cvis export-images <project-name> <directory> --data-config-outpath <outpath-for-yaml-config-file>
+cvis export-images <project-name> <directory> --data-config-outpath <outpath-for-yaml-config-file> --env-file .env
 ```
 If you uploaded the images using the cvis command line tool, the exported images will have the same names.
 This is not the case if you just use the Azure Custom Vision SDK. 
