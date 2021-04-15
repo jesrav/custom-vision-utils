@@ -33,8 +33,9 @@ class LocalImage(ImageInterface):
     def from_pil_image(
         image: Image, uri: Union[Path, str], name: Optional[str] = None
     ) -> "LocalImage":
-        _validate_uri(uri)
+        uri = Path(uri)
         image.save(uri)
+        _validate_uri(uri)
         return LocalImage(uri=uri, name=name)
 
     @staticmethod
@@ -80,8 +81,9 @@ class LocalClassifierImage(ImageInterface):
         tag_names: List[str],
         name: Optional[str] = None,
     ) -> "LocalClassifierImage":
-        _validate_uri(uri)
+        uri = Path(uri)
         image.save(uri)
+        _validate_uri(uri)
         return LocalClassifierImage(uri=uri, tag_names=tag_names, name=name)
 
     @staticmethod
@@ -131,8 +133,9 @@ class LocalObjectDetectionImage(ImageInterface):
         regions: List[Region],
         name: Optional[str] = None,
     ) -> "LocalObjectDetectionImage":
-        _validate_uri(uri)
+        uri = Path(uri)
         image.save(uri)
+        _validate_uri(uri)
         return LocalObjectDetectionImage(uri=uri, regions=regions, name=name)
 
     @staticmethod
