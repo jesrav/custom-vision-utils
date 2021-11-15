@@ -140,7 +140,7 @@ def get_image_data_from_custom_vision(
 
 @click.command()
 @click.argument("project-name", type=click.Path())
-@click.argument("image-outdir", type=click.Path(exists=True, file_okay=False))
+@click.argument("image-outdir", type=click.Path())
 @click.option("--container-name", type=click.Path())
 @click.option("--data-config-outpath", type=click.Path())
 @click.option(
